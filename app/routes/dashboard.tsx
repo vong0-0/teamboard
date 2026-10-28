@@ -22,13 +22,13 @@ export default function Dashboard() {
           <SidebarTrigger className="border-ink bg-paper text-ink shadow-hard-sm size-10 rounded-sm border-2 md:hidden lg:inline-flex" />
         }
       />
-      <main>
+      <div className="page-content">
         <div className="font-display text-3xl font-bold">
           Bricolage Grotesque
         </div>
         <div className="font-mono text-3xl font-bold">Bricolage Grotesque</div>
         <div className="font-sans text-3xl font-bold">Bricolage Grotesque</div>
-      </main>
+      </div>
     </>
   );
 }
