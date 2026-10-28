@@ -15,7 +15,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
         <header>
           <StatusBar />
         </header>
-        {children}
+        <main>{children}</main>
         <ScrollRestoration />
         <Scripts />
       </body>
