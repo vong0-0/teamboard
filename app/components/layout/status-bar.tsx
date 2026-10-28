@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Skeleton } from "../ui/skeleton";
 
 export function StatusBar() {
   const [time, setTime] = useState("");
@@ -50,7 +51,11 @@ export function StatusBar() {
       className="bg-paper text-ink absolute top-0 left-0 flex h-11 w-full items-center justify-between px-6 md:hidden"
       role="group"
     >
-      <time className="font-mono text-[13px] font-bold">{time}</time>
+      {time ? (
+        <time className="font-mono text-[13px] font-bold">{time}</time>
+      ) : (
+        <Skeleton aria-hidden="true" className="h-3 w-10 rounded-sm" />
+      )}
 
       <div className="flex items-center gap-2">
         <svg

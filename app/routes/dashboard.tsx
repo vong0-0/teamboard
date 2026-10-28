@@ -1,13 +1,13 @@
-import type { Route } from "./+types/home";
+import type { Route } from "./+types/dashboard";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "New React Router App" },
-    { name: "description", content: "Welcome to React Router!" },
+    { title: "Dashboard | Teamboard" },
+    { name: "description", content: "Your Teamboard dashboard." },
   ];
 }
 
-export default function Home() {
+export default function Dashboard() {
   return (
     <>
       <div className="font-display text-3xl font-bold">Bricolage Grotesque</div>
