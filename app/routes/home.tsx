@@ -1,5 +1,4 @@
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -9,5 +8,11 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  return <Welcome />;
+  return (
+    <>
+      <div className="font-display text-3xl font-bold">Bricolage Grotesque</div>
+      <div className="font-mono text-3xl font-bold">Bricolage Grotesque</div>
+      <div className="font-sans text-3xl font-bold">Bricolage Grotesque</div>
+    </>
+  );
 }
