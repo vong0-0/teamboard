@@ -8,6 +8,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
+import { StatusBar } from "./components/layout/status-bar";
 import "./app.css";
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -19,7 +20,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="pt-11 md:pt-0">
+        <StatusBar />
         {children}
         <ScrollRestoration />
         <Scripts />
