@@ -21,7 +21,7 @@ export function TabBar() {
   return (
     <nav
       aria-label="Primary navigation"
-      className="border-ink bg-paper fixed inset-x-0 bottom-0 z-50 h-[69px] border-2 px-2 md:hidden"
+      className="border-ink bg-paper fixed inset-x-0 bottom-0 z-50 h-[69px] border-2 px-2 lg:hidden"
     >
       <ul className="flex h-full items-center">
         {tabs.map((tab) => {
@@ -30,7 +30,7 @@ export function TabBar() {
 
           return (
             <li
-              className="flex h-full flex-1 flex-col items-center justify-center gap-1"
+              className="flex h-full flex-1 items-center justify-center"
               key={tab.label}
             >
               <Link
@@ -41,7 +41,7 @@ export function TabBar() {
                     ? `${tab.label}, ${tab.badge} unread messages`
                     : tab.label
                 }
-                className="inline-flex p-0"
+                className="flex flex-col items-center justify-center gap-1 p-0"
               >
                 <span
                   className={`border-ink relative grid h-[26px] w-[30px] place-items-center rounded-sm border-2 font-mono text-sm font-bold ${
@@ -57,14 +57,14 @@ export function TabBar() {
                     </span>
                   )}
                 </span>
+                <span
+                  className={`font-mono text-[9px] leading-none font-bold ${
+                    active ? "text-ink" : "text-gray-500"
+                  }`}
+                >
+                  {tab.label}
+                </span>
               </Link>
-              <span
-                className={`font-mono text-[9px] leading-none font-bold ${
-                  active ? "text-ink" : "text-gray-500"
-                }`}
-              >
-                {tab.label}
-              </span>
             </li>
           );
         })}

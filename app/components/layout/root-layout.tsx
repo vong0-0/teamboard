@@ -11,7 +11,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className="pt-11 md:pt-0">
+      <body className="pt-11 lg:pt-0">
         <header>
           <StatusBar />
         </header>

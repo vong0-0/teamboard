@@ -48,7 +48,7 @@ export function StatusBar() {
   return (
     <div
       aria-label="Phone status bar"
-      className="bg-paper text-ink absolute top-0 left-0 flex h-11 w-full items-center justify-between px-6 md:hidden"
+      className="bg-paper text-ink absolute top-0 left-0 flex h-11 w-full items-center justify-between px-6 lg:hidden"
       role="group"
     >
       {time ? (
