@@ -14,7 +14,10 @@ export default function ProtectedLayout() {
         }
       >
         <ProtectedSidebar />
-        <SidebarInset data-testid="sidebar-inset" className="pb-[69px] lg:pb-0">
+        <SidebarInset
+          data-testid="sidebar-inset"
+          className="@container/sidebar pb-[69px] lg:pb-0"
+        >
           <Outlet />
         </SidebarInset>
       </SidebarProvider>
