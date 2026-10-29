@@ -79,7 +79,7 @@ export function ProtectedSidebar({
   return (
     <Sidebar
       collapsible="icon"
-      className="border-ink group-data-[side=left]:border-r-2"
+      className="border-ink hidden group-data-[side=left]:border-r-2 lg:block"
       {...props}
     >
       <Header />
