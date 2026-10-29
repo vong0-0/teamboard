@@ -7,6 +7,34 @@ import {
   BreadcrumbItem,
   BreadcrumbPage,
 } from "~/components/ui/breadcrumb";
+import { StatCard, type StatCardProps } from "~/components/dashboard/stat-card";
+
+const dashboardStats = [
+  {
+    title: "Revenue",
+    value: "$48,290",
+    badge: "+12%",
+    badgeTone: "positive",
+  },
+  {
+    title: "Active projects",
+    value: "24",
+    badge: "+3",
+    badgeTone: "positive",
+  },
+  {
+    title: "Open tasks",
+    value: "78",
+    badge: "-8%",
+    badgeTone: "negative",
+  },
+  {
+    title: "Team online",
+    value: "11 / 16",
+    badge: "LIVE",
+    badgeTone: "live",
+  },
+] satisfies StatCardProps[];
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -19,8 +47,13 @@ export default function Dashboard() {
   return (
     <>
       <Topbar left={<PageBreadcrumb />} right={<SidebarTrigger />} />
-      <div className="page-content">
+      <div className="page-content @container/sidebar">
         <DashboardHeader />
+        <div className="mt-6 grid grid-cols-2 gap-6 xl:grid-cols-4">
+          {dashboardStats.map((stat) => (
+            <StatCard key={stat.title} {...stat} />
+          ))}
+        </div>
       </div>
     </>
   );
