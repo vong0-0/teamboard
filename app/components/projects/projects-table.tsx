@@ -10,9 +10,9 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Track } from "~/components/shared/track";
+import { ProjectStatusBadge, type ProjectStatus } from "~/components/shared/project-status-badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 
-type ProjectStatus = "ACTIVE" | "ON HOLD" | "DONE";
 type Project = {
   id: string;
   initials: string;
@@ -47,12 +47,6 @@ const projects: Project[] = [
   { id: "content-migration", initials: "CM", name: "Content migration", description: "CMS move", owner: "Mac", ownerInitials: "MC", status: "DONE", progress: 100, budget: 6800, due: "Oct 12" },
   { id: "audit-log", initials: "AL", name: "Audit log", description: "Activity history", owner: "Haemin", ownerInitials: "HP", status: "ON HOLD", progress: 42, budget: 14700, due: "Dec 28" },
 ];
-
-const statusStyles: Record<ProjectStatus, string> = {
-  ACTIVE: "bg-ok",
-  "ON HOLD": "bg-warn",
-  DONE: "bg-ink text-paper",
-};
 
 const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
@@ -125,7 +119,7 @@ export function ProjectsTable() {
                 </div>
               </TableCell>
               <TableCell className="px-2 py-2"><div className="flex items-center gap-1.5"><Avatar className="border-ink size-5 border"><AvatarFallback className="font-mono text-[7px]">{project.ownerInitials}</AvatarFallback></Avatar><span className="text-[9px]">{project.owner}</span></div></TableCell>
-              <TableCell className="px-2 py-2"><span className={`border-ink inline-flex rounded-sm border px-1.5 py-0.5 font-mono text-[7px] font-bold ${statusStyles[project.status]}`}>{project.status}</span></TableCell>
+              <TableCell className="px-2 py-2"><ProjectStatusBadge status={project.status} /></TableCell>
               <TableCell className="px-2 py-2"><div className="flex min-w-24 items-center gap-1.5"><Track value={project.progress} className="h-2 flex-1" /><span className="font-mono text-[8px]">{project.progress}%</span></div></TableCell>
               <TableCell className="px-2 py-2 font-mono text-[9px] font-bold">{money.format(project.budget)}</TableCell>
               <TableCell className="px-2 py-2 font-mono text-[8px]">{project.due}</TableCell>
