@@ -49,7 +49,7 @@ export default function Dashboard() {
       <Topbar left={<PageBreadcrumb />} right={<SidebarTrigger />} />
       <div className="page-content @container/sidebar">
         <DashboardHeader />
-        <div className="mt-6 grid grid-cols-2 gap-6 xl:grid-cols-4">
+        <div className="sidebar:grid-cols-1 mt-6 grid gap-6 @lg/sidebar:grid-cols-2 @5xl/sidebar:grid-cols-4">
           {dashboardStats.map((stat) => (
             <StatCard key={stat.title} {...stat} />
           ))}
