@@ -8,6 +8,7 @@ import {
 } from "~/components/ui/breadcrumb";
 import { ProjectsHeader } from "~/components/projects/projects-header";
 import { ProjectStatusTabs } from "~/components/projects/project-status-tabs";
+import { ProjectsToolbar } from "~/components/projects/projects-toolbar";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -23,6 +24,7 @@ export default function Projects() {
       <div className="page-content">
         <ProjectsHeader />
         <ProjectStatusTabs />
+        <ProjectsToolbar />
       </div>
     </>
   );
