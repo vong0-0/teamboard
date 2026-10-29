@@ -7,6 +7,7 @@ import {
   BreadcrumbPage,
 } from "~/components/ui/breadcrumb";
 import { ProjectsHeader } from "~/components/projects/projects-header";
+import { ProjectStatusTabs } from "~/components/projects/project-status-tabs";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -21,6 +22,7 @@ export default function Projects() {
       <Topbar left={<PageBreadcrumb />} right={<SidebarTrigger />} />
       <div className="page-content">
         <ProjectsHeader />
+        <ProjectStatusTabs />
       </div>
     </>
   );
