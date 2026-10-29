@@ -8,6 +8,7 @@ import {
   BreadcrumbPage,
 } from "~/components/ui/breadcrumb";
 import { StatCard, type StatCardProps } from "~/components/dashboard/stat-card";
+import { RevenueChart } from "~/components/dashboard/charts/revenue-chart";
 
 const dashboardStats = [
   {
@@ -53,6 +54,10 @@ export default function Dashboard() {
           {dashboardStats.map((stat) => (
             <StatCard key={stat.title} {...stat} />
           ))}
+        </div>
+
+        <div>
+          <RevenueChart />
         </div>
       </div>
     </>
