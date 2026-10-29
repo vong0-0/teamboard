@@ -21,6 +21,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "~/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -107,6 +108,8 @@ export function ProtectedSidebar({
 }
 
 function Header() {
+  const closeMobileSidebar = useCloseMobileSidebar();
+
   return (
     <SidebarHeader>
       <SidebarMenu>
@@ -117,6 +120,7 @@ function Header() {
             size="lg"
             tooltip="Teamboard"
             className="h-auto p-0"
+            onClick={closeMobileSidebar}
           >
             <div className="bg-ink flex aspect-square size-8 shrink-0 items-center justify-center rounded-sm">
               <span className="text-paper text-lg font-bold">M</span>
@@ -141,6 +145,7 @@ function NavWorkspace({
   }[];
 }) {
   const { pathname } = useLocation();
+  const closeMobileSidebar = useCloseMobileSidebar();
 
   return (
     <SidebarGroup>
@@ -153,6 +158,7 @@ function NavWorkspace({
               tooltip={{ children: item.title, sideOffset: 10 }}
               isActive={pathname === item.url && item.title === "Dashboard"}
               className="data-active:bg-ink data-active:text-paper transition-colors hover:bg-gray-200"
+              onClick={closeMobileSidebar}
             >
               {item.icon && <item.icon />}
               <span>{item.title}</span>
@@ -162,6 +168,14 @@ function NavWorkspace({
       </SidebarMenu>
     </SidebarGroup>
   );
+}
+
+function useCloseMobileSidebar() {
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  return () => {
+    if (isMobile) setOpenMobile(false);
+  };
 }
 
 function Storage({
