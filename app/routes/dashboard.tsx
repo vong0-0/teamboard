@@ -11,6 +11,7 @@ import { StatCard, type StatCardProps } from "~/components/dashboard/stat-card";
 import { RevenueChart } from "~/components/dashboard/charts/revenue-chart";
 import { TaskStatusChart } from "~/components/dashboard/charts/task-status-chart";
 import { MyLatestTasks } from "~/components/dashboard/tables/my-latest-tasks";
+import { ActivityLog } from "~/components/dashboard/activity-log";
 
 const dashboardStats = [
   {
@@ -65,8 +66,11 @@ export default function Dashboard() {
           <TaskStatusChart />
         </div>
 
-        <div className="mt-6 min-w-0">
+        <div className="mt-6 grid min-w-0 gap-6 @2xl/sidebar:grid-cols-3">
+          <div className="min-w-0 @2xl/sidebar:col-span-2">
           <MyLatestTasks />
+          </div>
+          <ActivityLog />
         </div>
       </div>
     </>
