@@ -5,5 +5,6 @@ export default [
   layout("routes/layout/protected-layout.tsx", [
     // Add routes that require authentication inside this layout.
     route("dashboard", "routes/dashboard.tsx"),
+    route("projects", "routes/projects.tsx"),
   ]),
 ] satisfies RouteConfig;
