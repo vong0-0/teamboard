@@ -1,5 +1,6 @@
 import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
 
+import { SessionHydrator } from "../shared/session-hydrator";
 import { StatusBar } from "./status-bar";
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
@@ -12,6 +13,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body className="pt-11 lg:pt-0">
+        <SessionHydrator />
         <header>
           <StatusBar />
         </header>
