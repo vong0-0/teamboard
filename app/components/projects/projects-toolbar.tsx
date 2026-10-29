@@ -3,6 +3,7 @@ import { Search, X } from "lucide-react";
 import { useSearchParams } from "react-router";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
+import { cn } from "cn";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -95,7 +96,13 @@ function FilterMenu({
             <Button
               variant="outline"
               size="sm"
-              className="border-ink bg-ink text-paper hover:bg-ink hover:text-paper focus:text-paper data-popup-open:bg-paper data-popup-open:text-ink h-7 rounded-full px-2.5 font-mono text-[9px] uppercase"
+              className={cn(
+                "border-ink h-7 rounded-full px-2.5 font-mono text-[9px] uppercase",
+                value
+                  ? "!bg-ink !text-paper hover:!bg-ink hover:!text-paper"
+                  : "bg-transparent text-ink hover:bg-ink hover:text-paper",
+                "focus:text-paper data-popup-open:bg-paper data-popup-open:text-ink",
+              )}
             />
           }
         >
