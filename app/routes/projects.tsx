@@ -9,6 +9,7 @@ import {
 import { ProjectsHeader } from "~/components/projects/projects-header";
 import { ProjectStatusTabs } from "~/components/projects/project-status-tabs";
 import { ProjectsToolbar } from "~/components/projects/projects-toolbar";
+import { ProjectsTable } from "~/components/projects/projects-table";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -25,6 +26,7 @@ export default function Projects() {
         <ProjectsHeader />
         <ProjectStatusTabs />
         <ProjectsToolbar />
+        <ProjectsTable />
       </div>
     </>
   );
