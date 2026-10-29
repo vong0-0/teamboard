@@ -7,6 +7,12 @@
       "skillPath": "skills/git-commit/SKILL.md",
       "computedHash": "78b6a33700091345cd449f9e3642ddd611b479b341efc9d6c750f7e04d15216a"
     },
+    "react-state-management": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/frontend-mobile-development/skills/react-state-management/SKILL.md",
+      "computedHash": "ad235563b998dde651611d5b733f12c3cdcc61f6e9368551230a1dbfeec2313e"
+    },
     "tailwind-design-system": {
       "source": "wshobson/agents",
       "sourceType": "github",
