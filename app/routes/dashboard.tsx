@@ -1,6 +1,11 @@
 import type { Route } from "./+types/dashboard";
 import { Topbar } from "~/components/layout/topbar";
-import { SidebarTrigger } from "~/components/ui/sidebar";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbPage,
+} from "~/components/ui/breadcrumb";
+import { SidebarTrigger } from "~/components/layout/sidebar-trigger";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -14,13 +19,13 @@ export default function Dashboard() {
     <>
       <Topbar
         left={
-          <div className="font-mono text-[9px] font-bold tracking-wide text-gray-500">
-            WORKSPACE / DASHBOARD
-          </div>
+          <Breadcrumb>
+            <BreadcrumbItem>
+              <BreadcrumbPage>Dashboard</BreadcrumbPage>
+            </BreadcrumbItem>
+          </Breadcrumb>
         }
-        right={
-          <SidebarTrigger className="border-ink bg-paper text-ink shadow-hard-sm size-10 rounded-sm border-2 md:hidden lg:inline-flex" />
-        }
+        right={<SidebarTrigger />}
       />
       <div className="page-content">
         <div className="font-display text-3xl font-bold">
