@@ -35,6 +35,7 @@ import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { Track } from "../shared/track";
 import { getAvatarFallback } from "~/lib/get-avatar-fallback";
 import { useIsMobile } from "~/hooks/use-mobile";
+import { useSession } from "~/stores/session-store";
 
 const sidebarData = {
   workspace: [
@@ -74,6 +75,7 @@ const sidebarData = {
 export function ProtectedSidebar({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
+  const session = useSession();
   return (
     <Sidebar
       collapsible="icon"
@@ -86,11 +88,16 @@ export function ProtectedSidebar({
       </SidebarContent>
 
       <SidebarFooter className="space-y-1.5">
-        <Storage data={{ storageLimitGB: 10, storageUsedGB: 7.2 }} />
+        <Storage
+          data={{
+            storageLimitGB: session?.storageLimitGB || 0,
+            storageUsedGB: session?.storageUsedGB || 0,
+          }}
+        />
         <UserNav
           user={{
-            name: "Vongsouvan Chanthasone",
-            email: "vongsouvan@email.com",
+            name: session?.name || "-",
+            email: session?.email || "-",
           }}
         />
       </SidebarFooter>
