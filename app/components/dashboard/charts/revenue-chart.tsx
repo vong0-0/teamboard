@@ -83,7 +83,7 @@ export function RevenueChart() {
   }, [data]);
 
   return (
-    <section className="window" aria-label="Revenue chart">
+    <section className="window min-w-0" aria-label="Revenue chart">
       <div className="window-bar relative justify-center">
         <span className="absolute left-2.5 flex gap-1.5" aria-hidden="true">
           <i className="border-ink size-1.5 rounded-full border" />
@@ -124,7 +124,7 @@ export function RevenueChart() {
 
         <ChartContainer
           config={chartConfig}
-          className="h-[230px] w-full sm:h-[300px]"
+          className="aspect-auto! h-[230px] min-w-0 w-full sm:h-[300px]"
         >
           <AreaChart
             accessibilityLayer

@@ -9,6 +9,7 @@ import {
 } from "~/components/ui/breadcrumb";
 import { StatCard, type StatCardProps } from "~/components/dashboard/stat-card";
 import { RevenueChart } from "~/components/dashboard/charts/revenue-chart";
+import { TaskStatusChart } from "~/components/dashboard/charts/task-status-chart";
 
 const dashboardStats = [
   {
@@ -48,16 +49,19 @@ export default function Dashboard() {
   return (
     <>
       <Topbar left={<PageBreadcrumb />} right={<SidebarTrigger />} />
-      <div className="page-content @container/sidebar">
+      <div className="page-content @container/sidebar min-w-0">
         <DashboardHeader />
-        <div className="sidebar:grid-cols-1 mt-6 grid gap-6 @lg/sidebar:grid-cols-2 @5xl/sidebar:grid-cols-4">
+        <div className="sidebar:grid-cols-1 mt-6 grid min-w-0 gap-6 @lg/sidebar:grid-cols-2 @5xl/sidebar:grid-cols-4">
           {dashboardStats.map((stat) => (
             <StatCard key={stat.title} {...stat} />
           ))}
         </div>
 
-        <div>
-          <RevenueChart />
+        <div className="mt-6 grid min-w-0 gap-6 @2xl/sidebar:grid-cols-3">
+          <div className="min-w-0 @2xl/sidebar:col-span-2">
+            <RevenueChart />
+          </div>
+          <TaskStatusChart />
         </div>
       </div>
     </>
