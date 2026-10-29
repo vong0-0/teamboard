@@ -6,6 +6,7 @@ import {
   BreadcrumbItem,
   BreadcrumbPage,
 } from "~/components/ui/breadcrumb";
+import { ProjectsHeader } from "~/components/projects/projects-header";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -17,19 +18,20 @@ export function meta({}: Route.MetaArgs) {
 export default function Projects() {
   return (
     <>
-      <Topbar
-        left={
-          <Breadcrumb>
-            <BreadcrumbItem>
-              <BreadcrumbPage>Projects</BreadcrumbPage>
-            </BreadcrumbItem>
-          </Breadcrumb>
-        }
-        right={<SidebarTrigger />}
-      />
+      <Topbar left={<PageBreadcrumb />} right={<SidebarTrigger />} />
       <div className="page-content">
-        <h1 className="font-display text-3xl font-bold">Projects</h1>
+        <ProjectsHeader />
       </div>
     </>
+  );
+}
+
+function PageBreadcrumb() {
+  return (
+    <Breadcrumb>
+      <BreadcrumbItem>
+        <BreadcrumbPage>Projects</BreadcrumbPage>
+      </BreadcrumbItem>
+    </Breadcrumb>
   );
 }

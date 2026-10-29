@@ -156,7 +156,10 @@ function NavWorkspace({
             <SidebarMenuButton
               render={<Link to={item.url} />}
               tooltip={{ children: item.title, sideOffset: 10 }}
-              isActive={pathname === item.url && item.title === "Dashboard"}
+              isActive={
+                pathname === item.url &&
+                (item.url !== "/dashboard" || item.title === "Dashboard")
+              }
               className="data-active:bg-ink data-active:text-paper transition-colors hover:bg-gray-200"
               onClick={closeMobileSidebar}
             >

@@ -51,7 +51,7 @@ export default function Dashboard() {
   return (
     <>
       <Topbar left={<PageBreadcrumb />} right={<SidebarTrigger />} />
-      <div className="page-content min-w-0">
+      <div className="page-content">
         <DashboardHeader />
         <div className="sidebar:grid-cols-1 mt-6 grid min-w-0 gap-6 @lg/sidebar:grid-cols-2 @5xl/sidebar:grid-cols-4">
           {dashboardStats.map((stat) => (
