@@ -35,8 +35,9 @@
   --translate-lg: 6px;
 
   /* Fonts */
-  --font-display: "Bricolage Grotesque", "DM Sans Variable", sans-serif;
-  --font-sans: "Geist Variable", sans-serif;
+  --font-display:
+    "Bricolage Grotesque Variable", "DM Sans Variable", sans-serif;
+  --font-sans: "DM Sans Variable", sans-serif;
   --font-mono: "Space Mono", ui-monospace, monospace;
 
   --font-heading: var(--font-sans);
