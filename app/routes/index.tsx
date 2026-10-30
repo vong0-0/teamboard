@@ -1,9 +1,5 @@
-import { redirect } from "react-router";
-
-export function loader() {
-  return redirect("/dashboard");
-}
+import { Navigate } from "react-router";
 
 export default function Index() {
-  return null;
+  return <Navigate to="/dashboard" replace />;
 }
