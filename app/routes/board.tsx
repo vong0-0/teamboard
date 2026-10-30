@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { Route } from "./+types/board";
 import { BoardHeader } from "~/components/board/board-header";
 import { BoardEmptyState } from "~/components/board/board-empty-state";
+import { BoardColumns } from "~/components/board/board-columns";
 import { SidebarTrigger } from "~/components/layout/sidebar-trigger";
 import { Topbar } from "~/components/layout/topbar";
 import {
@@ -23,16 +24,20 @@ export default function Board() {
   return (
     <>
       <Topbar left={<PageBreadcrumb />} right={<SidebarTrigger />} />
-      <BoardHeader
-        selectedProjectId={selectedProjectId}
-        onProjectSelect={setSelectedProjectId}
-      />
-      {selectedProjectId ? null : (
-        <BoardEmptyState
+      <div className="page-content">
+        <BoardHeader
           selectedProjectId={selectedProjectId}
           onProjectSelect={setSelectedProjectId}
         />
-      )}
+        {selectedProjectId ? (
+          <BoardColumns />
+        ) : (
+          <BoardEmptyState
+            selectedProjectId={selectedProjectId}
+            onProjectSelect={setSelectedProjectId}
+          />
+        )}
+      </div>
     </>
   );
 }

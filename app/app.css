@@ -170,6 +170,31 @@ body {
   .window-bar {
     @apply border-ink flex items-center gap-1.5 border-b-2 bg-gray-200 px-2.5 py-1.5 font-mono text-[11px];
   }
+  .board-scrollbar {
+    scrollbar-color: var(--color-gray-500) var(--color-ink);
+    scrollbar-width: auto;
+  }
+  .board-scrollbar::-webkit-scrollbar {
+    height: 18px;
+  }
+  .board-scrollbar::-webkit-scrollbar-track {
+    background-color: var(--color-ink);
+  }
+  .board-scrollbar::-webkit-scrollbar-thumb {
+    border: 3px solid var(--color-ink);
+    border-radius: 999px;
+    background-color: var(--color-gray-500);
+  }
+  .board-scrollbar::-webkit-scrollbar-button:single-button:horizontal:decrement {
+    width: 18px;
+    background-color: var(--color-gray-500);
+    clip-path: polygon(65% 20%, 35% 50%, 65% 80%);
+  }
+  .board-scrollbar::-webkit-scrollbar-button:single-button:horizontal:increment {
+    width: 18px;
+    background-color: var(--color-gray-500);
+    clip-path: polygon(35% 20%, 65% 50%, 35% 80%);
+  }
   .login-decoration {
     @apply absolute;
   }

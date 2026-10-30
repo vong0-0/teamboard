@@ -1,6 +1,20 @@
-import type { BoardColumn, Task } from "~/type";
+import type { BoardColumn, ID, Task } from "~/type";
 
 export const mockOnlineBoardMembers = ["HP", "OP", "MC"];
+
+export const mockBoardLabels = {
+  1: { name: "DESIGN", tone: "default" },
+  2: { name: "RESEARCH", tone: "default" },
+  3: { name: "DOCS", tone: "default" },
+  4: { name: "FEATURE", tone: "feature" },
+} as const;
+
+export const mockBoardAssignees: { id: ID; initials: string }[] = [
+  { id: 1, initials: "HP" },
+  { id: 2, initials: "OP" },
+  { id: 3, initials: "MC" },
+  { id: 4, initials: "JS" },
+];
 
 export const mockBoardColumns: BoardColumn[] = [
   {
@@ -144,20 +158,57 @@ export const mockBoardTasks: Task[] = [
     sprintId: 14,
     columnId: 105,
     order: 0,
-    title: "Add Board, List, and Timeline tabs",
-    description: "Provide navigation between the available board views.",
-    priority: "high",
-    assigneeIds: [1],
-    labelIds: [1, 3],
-    subtasks: [
-      { id: 1461, title: "Add view tabs", done: true, order: 0 },
-      { id: 1462, title: "Set Board as the default view", done: true, order: 1 },
-    ],
-    dueDate: null,
+    title: "Login page",
+    description: "Build the project login page.",
+    priority: "low",
+    assigneeIds: [3],
+    labelIds: [4],
+    subtasks: [],
+    dueDate: "2026-10-15",
     createdById: 2,
     createdAt: "2026-10-23T07:30:00.000Z",
     updatedAt: "2026-10-29T16:00:00.000Z",
-    commentCount: 5,
+    commentCount: 2,
+    attachmentCount: 0,
+  },
+  {
+    id: 147,
+    key: "TB-147",
+    projectId: 1,
+    sprintId: 14,
+    columnId: 105,
+    order: 1,
+    title: "Sidebar navigation",
+    description: "Implement the main application sidebar navigation.",
+    priority: "low",
+    assigneeIds: [4],
+    labelIds: [4],
+    subtasks: [],
+    dueDate: "2026-10-16",
+    createdById: 1,
+    createdAt: "2026-10-24T10:15:00.000Z",
+    updatedAt: "2026-10-29T12:00:00.000Z",
+    commentCount: 3,
+    attachmentCount: 0,
+  },
+  {
+    id: 148,
+    key: "TB-148",
+    projectId: 1,
+    sprintId: 14,
+    columnId: 105,
+    order: 2,
+    title: "Brand tokens",
+    description: "Add the shared color and typography tokens.",
+    priority: "low",
+    assigneeIds: [1],
+    labelIds: [1],
+    subtasks: [],
+    dueDate: "2026-10-12",
+    createdById: 2,
+    createdAt: "2026-10-22T08:00:00.000Z",
+    updatedAt: "2026-10-28T15:30:00.000Z",
+    commentCount: 1,
     attachmentCount: 0,
   },
 ];

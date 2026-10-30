@@ -17,7 +17,7 @@ export function BoardHeader({
   const hasSelectedProject = Boolean(selectedProjectId);
 
   return (
-    <div className="px-6 py-5">
+    <>
       <PageHeader
         eyebrow={
           <BoardProjectSelector
@@ -33,7 +33,7 @@ export function BoardHeader({
                 {mockOnlineBoardMembers.map((member) => (
                   <Avatar
                     key={member}
-                    className="border-ink size-7 border bg-paper ring-0"
+                    className="border-ink bg-paper size-7 border ring-0"
                   >
                     <AvatarFallback className="bg-paper text-ink font-mono text-[9px] font-bold">
                       {member}
@@ -51,14 +51,14 @@ export function BoardHeader({
                 type="button"
                 variant="outline"
                 disabled={!hasSelectedProject}
-                className="border-ink bg-paper text-ink shadow-hard-sm button-press-sm rounded-sm border-2 px-4 py-2 text-xs disabled:border-gray-500 disabled:bg-gray-200 disabled:text-gray-500 disabled:shadow-none disabled:opacity-100 sm:px-5 sm:text-sm"
+                className="border-ink bg-paper text-ink shadow-hard-sm button-press-sm rounded-sm border-2 px-4 py-2 text-xs disabled:border-gray-500 disabled:bg-gray-200 disabled:text-gray-500 disabled:opacity-100 disabled:shadow-none sm:px-5 sm:text-sm"
               >
                 Share
               </Button>
               <Button
                 type="button"
                 disabled={!hasSelectedProject}
-                className="border-ink bg-ink text-paper shadow-hard-sm button-press-sm rounded-sm border-2 px-4 py-2 text-xs hover:bg-gray-200 hover:text-ink disabled:border-gray-500 disabled:bg-gray-200 disabled:text-gray-500 disabled:shadow-none disabled:opacity-100 sm:px-5 sm:text-sm"
+                className="border-ink bg-ink text-paper shadow-hard-sm button-press-sm hover:text-ink rounded-sm border-2 px-4 py-2 text-xs hover:bg-gray-200 disabled:border-gray-500 disabled:bg-gray-200 disabled:text-gray-500 disabled:opacity-100 disabled:shadow-none sm:px-5 sm:text-sm"
               >
                 + New task
               </Button>
@@ -71,6 +71,6 @@ export function BoardHeader({
           <BoardViewTabs />
         </div>
       ) : null}
-    </div>
+    </>
   );
 }
