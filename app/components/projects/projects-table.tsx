@@ -8,16 +8,24 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { toast } from "~/components/ui/toast";
-import { mockProjects } from "./project-data";
+import type { Project } from "./project-data";
 import { ProjectTableRow } from "./project-table-row";
 import { ProjectsBulkActions } from "./projects-bulk-actions";
 import { useProjectsTable } from "~/hooks/use-projects-table";
 
-export function ProjectsTable() {
-  const table = useProjectsTable();
+export function ProjectsTable({
+  projects,
+  onEditProject,
+}: {
+  projects: Project[];
+  onEditProject: (project: Project) => void;
+}) {
+  const table = useProjectsTable(projects);
 
   function handleArchive(projectIds: string[] = table.selectedIds) {
-    const archived = mockProjects.filter((project) => projectIds.includes(project.id));
+    const archived = projects.filter((project) =>
+      projectIds.includes(project.id),
+    );
     if (archived.length === 0) return;
 
     toast.add({
@@ -30,14 +38,19 @@ export function ProjectsTable() {
       timeout: 5000,
       actionProps: {
         children: "UNDO",
-        onClick: () => table.setSelectedIds((current) => [...new Set([...current, ...projectIds])]),
+        onClick: () =>
+          table.setSelectedIds((current) => [
+            ...new Set([...current, ...projectIds]),
+          ]),
       },
     });
     table.removeSelectedIds(projectIds);
   }
 
   function handleDelete(projectIds: string[] = table.selectedIds) {
-    const deleted = mockProjects.filter((project) => projectIds.includes(project.id));
+    const deleted = projects.filter((project) =>
+      projectIds.includes(project.id),
+    );
     if (deleted.length === 0) return;
 
     toast.add({
@@ -47,7 +60,10 @@ export function ProjectsTable() {
       timeout: 5000,
       actionProps: {
         children: "UNDO",
-        onClick: () => table.setSelectedIds((current) => [...new Set([...current, ...projectIds])]),
+        onClick: () =>
+          table.setSelectedIds((current) => [
+            ...new Set([...current, ...projectIds]),
+          ]),
       },
     });
     table.removeSelectedIds(projectIds);
@@ -72,7 +88,7 @@ export function ProjectsTable() {
   }
 
   function handleDuplicate(projectId: string) {
-    const project = mockProjects.find((item) => item.id === projectId);
+    const project = projects.find((item) => item.id === projectId);
     if (!project) return;
 
     toast.add({
@@ -119,9 +135,15 @@ export function ProjectsTable() {
               <TableHead className="px-2 font-mono text-[8px] font-bold uppercase">
                 Project <span className="text-accent">↑</span>
               </TableHead>
-              <TableHead className="px-2 font-mono text-[8px] font-bold uppercase">Owner</TableHead>
-              <TableHead className="px-2 font-mono text-[8px] font-bold uppercase">Status</TableHead>
-              <TableHead className="px-2 font-mono text-[8px] font-bold uppercase">Progress</TableHead>
+              <TableHead className="px-2 font-mono text-[8px] font-bold uppercase">
+                Owner
+              </TableHead>
+              <TableHead className="px-2 font-mono text-[8px] font-bold uppercase">
+                Status
+              </TableHead>
+              <TableHead className="px-2 font-mono text-[8px] font-bold uppercase">
+                Progress
+              </TableHead>
               <TableHead className="px-2 font-mono text-[8px] font-bold uppercase">
                 Budget <span className="text-accent">↕</span>
               </TableHead>
@@ -138,6 +160,7 @@ export function ProjectsTable() {
                 project={project}
                 selected={table.selectedIds.includes(project.id)}
                 onToggleSelected={() => table.toggleProject(project.id)}
+                onEdit={() => onEditProject(project)}
                 onDuplicate={() => handleDuplicate(project.id)}
                 onArchive={() => handleArchive([project.id])}
                 onDelete={() => handleDelete([project.id])}
@@ -148,17 +171,27 @@ export function ProjectsTable() {
 
         <div className="border-ink flex items-center justify-between gap-3 border-t bg-gray-100 px-3 py-1.5 font-mono text-[8px]">
           <div className="flex items-center gap-2">
-            <label htmlFor="projects-page-size" className="uppercase">Rows per page</label>
+            <label htmlFor="projects-page-size" className="uppercase">
+              Rows per page
+            </label>
             <input
               id="projects-page-size"
               type="number"
               min={1}
               value={table.pageSize}
-              onChange={(event) => table.changePageSize(Number(event.target.value))}
+              onChange={(event) =>
+                table.changePageSize(Number(event.target.value))
+              }
               className="border-ink bg-paper w-10 rounded-sm border px-1 py-0.5 text-center"
             />
             <span>
-              {table.pageProjects.length ? (table.currentPage - 1) * table.pageSize + 1 : 0}–{(table.currentPage - 1) * table.pageSize + table.pageProjects.length} of {table.filteredProjects.length}
+              {table.pageProjects.length
+                ? (table.currentPage - 1) * table.pageSize + 1
+                : 0}
+              –
+              {(table.currentPage - 1) * table.pageSize +
+                table.pageProjects.length}{" "}
+              of {table.filteredProjects.length}
             </span>
           </div>
           <div className="flex items-center gap-1">
@@ -167,9 +200,13 @@ export function ProjectsTable() {
               size="icon-xs"
               aria-label="Previous page"
               disabled={table.currentPage <= 1}
-              onClick={() => table.setPage((current) => Math.max(1, current - 1))}
+              onClick={() =>
+                table.setPage((current) => Math.max(1, current - 1))
+              }
               className="border-ink bg-paper size-5 rounded-sm border"
-            >‹</Button>
+            >
+              ‹
+            </Button>
             <span className="bg-ink text-paper rounded-sm px-2 py-1">
               {table.currentPage} / {table.totalPages}
             </span>
@@ -178,9 +215,15 @@ export function ProjectsTable() {
               size="icon-xs"
               aria-label="Next page"
               disabled={table.currentPage >= table.totalPages}
-              onClick={() => table.setPage((current) => Math.min(table.totalPages, current + 1))}
+              onClick={() =>
+                table.setPage((current) =>
+                  Math.min(table.totalPages, current + 1),
+                )
+              }
               className="border-ink bg-paper size-5 rounded-sm border"
-            >›</Button>
+            >
+              ›
+            </Button>
           </div>
         </div>
       </section>

@@ -11,6 +11,9 @@ export type Project = {
   progress: number;
   budget: number;
   due: string;
+  startDate?: string;
+  dueDate?: string;
+  sprint?: string;
 };
 
 export const mockProjects: Project[] = [

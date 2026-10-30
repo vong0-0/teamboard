@@ -143,7 +143,9 @@ function ToastIcon({ type }: { type: string | undefined }) {
   let icon: React.ReactNode = null;
 
   if (type === "success") {
-    icon = <CircleCheckIcon aria-hidden="true" />;
+    icon = (
+      <CircleCheckIcon className="text-paper size-3.5" aria-hidden="true" />
+    );
   }
 
   if (type === "info") {
@@ -154,8 +156,8 @@ function ToastIcon({ type }: { type: string | undefined }) {
     icon = <TriangleAlertIcon aria-hidden="true" />;
   }
 
-  if (type === "error") {
-    icon = <OctagonXIcon className="text-destructive" aria-hidden="true" />;
+  if (type === "error" || type === "failed") {
+    icon = <OctagonXIcon className="text-paper size-3.5" aria-hidden="true" />;
   }
 
   if (type === "loading") {
@@ -200,28 +202,39 @@ function ToastList() {
   const { toasts } = ToastPrimitive.useToastManager();
 
   return toasts.map((toastItem) => {
-    const isProjectAction = ["archive", "assign", "export", "delete", "duplicate"].includes(
-      toastItem.type ?? "",
-    );
+    const isCompactToast = [
+      "archive",
+      "assign",
+      "export",
+      "delete",
+      "duplicate",
+      "success",
+      "error",
+      "failed",
+    ].includes(toastItem.type ?? "");
+    const isFailureToast =
+      toastItem.type === "delete" ||
+      toastItem.type === "error" ||
+      toastItem.type === "failed";
 
     return (
       <Toast
         key={toastItem.id}
         toast={toastItem}
         className={
-          isProjectAction
+          isCompactToast
             ? "border-ink bg-paper text-ink shadow-hard w-[278px] rounded-none border-2"
             : undefined
         }
       >
         <ToastContent
-          className={isProjectAction ? "relative gap-2.5 p-2.5" : undefined}
+          className={isCompactToast ? "relative gap-2.5 p-2.5" : undefined}
         >
-          {isProjectAction ? (
+          {isCompactToast ? (
             <span
               className={cn(
                 "flex size-5 shrink-0 items-center justify-center rounded-sm",
-                toastItem.type === "delete"
+                isFailureToast
                   ? "bg-accent"
                   : toastItem.type === "archive"
                     ? "bg-warn"
@@ -235,17 +248,17 @@ function ToastList() {
           )}
           <div className="flex min-w-0 flex-1 flex-col gap-0.5">
             <ToastTitle
-              className={isProjectAction ? "text-[10px] font-bold" : undefined}
+              className={isCompactToast ? "text-[10px] font-bold" : undefined}
             />
             <ToastDescription
               className={
-                isProjectAction
+                isCompactToast
                   ? "text-[9px] leading-tight text-gray-500"
                   : undefined
               }
             />
           </div>
-          {isProjectAction ? (
+          {isCompactToast ? (
             <ToastAction
               render={
                 <button className="text-ink shrink-0 font-mono text-[8px] font-bold underline underline-offset-2" />
@@ -255,16 +268,16 @@ function ToastList() {
             <ToastAction />
           )}
           <ToastClose
-            className={isProjectAction ? "text-ink size-3" : undefined}
+            className={isCompactToast ? "text-ink size-3" : undefined}
             render={
-              isProjectAction ? (
+              isCompactToast ? (
                 <button className="text-ink shrink-0 p-0.5" />
               ) : undefined
             }
           >
             <XIcon className="size-3" />
           </ToastClose>
-          {isProjectAction ? (
+          {isCompactToast ? (
             <span className="bg-ink absolute inset-x-0 bottom-0 h-1 origin-left animate-[toast-progress_5s_linear_forwards]" />
           ) : null}
         </ToastContent>

@@ -1,7 +1,10 @@
 import { Button } from "~/components/ui/button";
-import { Link } from "react-router";
 
-export function ProjectsHeader() {
+export function ProjectsHeader({
+  onCreateProject,
+}: {
+  onCreateProject: () => void;
+}) {
   return (
     <div className="flex items-center justify-between gap-4">
       <h2 className="font-display min-w-0 text-[44px] leading-[100%] font-black tracking-[-3%]">
@@ -15,7 +18,8 @@ export function ProjectsHeader() {
           Import CSV
         </Button>
         <Button
-          render={<Link to="/projects" />}
+          type="button"
+          onClick={onCreateProject}
           className="border-ink bg-ink text-paper shadow-hard-sm hover:text-ink rounded-sm border-2 px-5 py-2.5 text-[14px] transition-all duration-200 hover:bg-transparent"
         >
           + New project

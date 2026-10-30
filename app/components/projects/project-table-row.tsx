@@ -10,16 +10,14 @@ import {
 import { ProjectStatusBadge } from "~/components/shared/project-status-badge";
 import { Track } from "~/components/shared/track";
 import { formatUSD } from "~/lib/format-currency";
-import {
-  TableCell,
-  TableRow,
-} from "~/components/ui/table";
+import { TableCell, TableRow } from "~/components/ui/table";
 import type { Project } from "./project-data";
 
 type ProjectTableRowProps = {
   project: Project;
   selected: boolean;
   onToggleSelected: () => void;
+  onEdit: () => void;
   onDuplicate: () => void;
   onArchive: () => void;
   onDelete: () => void;
@@ -29,6 +27,7 @@ export function ProjectTableRow({
   project,
   selected,
   onToggleSelected,
+  onEdit,
   onDuplicate,
   onArchive,
   onDelete,
@@ -52,7 +51,9 @@ export function ProjectTableRow({
             </AvatarFallback>
           </Avatar>
           <div>
-            <p className="text-[10px] leading-tight font-bold">{project.name}</p>
+            <p className="text-[10px] leading-tight font-bold">
+              {project.name}
+            </p>
             <p className="text-[8px] leading-tight text-gray-500">
               {project.description}
             </p>
@@ -102,7 +103,7 @@ export function ProjectTableRow({
             align="end"
             className="window shadow-hard-sm min-w-28 rounded-sm p-1"
           >
-            <DropdownMenuItem>Edit</DropdownMenuItem>
+            <DropdownMenuItem onClick={onEdit}>Edit</DropdownMenuItem>
             <DropdownMenuItem onClick={onDuplicate}>Duplicate</DropdownMenuItem>
             <DropdownMenuItem onClick={onArchive}>Archive</DropdownMenuItem>
             <DropdownMenuItem onClick={onDelete} className="text-accent">

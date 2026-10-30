@@ -1,8 +1,12 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
-import { filterProjects, mockProjects } from "~/components/projects/project-data";
+import {
+  filterProjects,
+  mockProjects,
+  type Project,
+} from "~/components/projects/project-data";
 
-export function useProjectsTable() {
+export function useProjectsTable(projects: Project[] = mockProjects) {
   const [searchParams] = useSearchParams();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [page, setPage] = useState(1);
@@ -10,9 +14,13 @@ export function useProjectsTable() {
   const search = searchParams.get("search") ?? "";
   const status = searchParams.get("status");
 
+  useEffect(() => {
+    setPage(1);
+  }, [search, status, projects.length]);
+
   const filteredProjects = useMemo(
-    () => filterProjects(mockProjects, search, status),
-    [search, status],
+    () => filterProjects(projects, search, status),
+    [projects, search, status],
   );
   const totalPages = Math.max(1, Math.ceil(filteredProjects.length / pageSize));
   const currentPage = Math.min(page, totalPages);
@@ -35,8 +43,15 @@ export function useProjectsTable() {
   function togglePageSelection() {
     setSelectedIds((current) =>
       allPageSelected
-        ? current.filter((id) => !pageProjects.some((project) => project.id === id))
-        : [...new Set([...current, ...pageProjects.map((project) => project.id)])],
+        ? current.filter(
+            (id) => !pageProjects.some((project) => project.id === id),
+          )
+        : [
+            ...new Set([
+              ...current,
+              ...pageProjects.map((project) => project.id),
+            ]),
+          ],
     );
   }
 
