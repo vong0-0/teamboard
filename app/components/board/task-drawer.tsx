@@ -4,8 +4,6 @@ import {
   Check,
   ChevronLeft,
   ChevronRight,
-  Copy,
-  Ellipsis,
   GripVertical,
   UserRound,
   X,
@@ -78,13 +76,6 @@ export function TaskDrawer({
     setNewSubtaskTitle("");
   }, [task?.id]);
 
-  async function copyTaskLink() {
-    if (!task || !navigator.clipboard) return;
-    await navigator.clipboard.writeText(
-      `${window.location.origin}${window.location.pathname}#${task.key}`,
-    );
-  }
-
   function handleAddSubtask(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const title = newSubtaskTitle.trim();
@@ -148,21 +139,6 @@ export function TaskDrawer({
               </div>
 
               <div className="flex shrink-0 items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={copyTaskLink}
-                  className="border-ink bg-paper flex h-8 items-center gap-1.5 rounded-sm border-2 px-2 font-mono text-[9px] font-bold sm:px-3"
-                >
-                  <Copy aria-hidden="true" className="size-3" />
-                  <span className="hidden sm:inline">Copy link</span>
-                </button>
-                <button
-                  type="button"
-                  aria-label="More task actions"
-                  className="border-ink bg-paper flex size-8 items-center justify-center rounded-sm border-2"
-                >
-                  <Ellipsis aria-hidden="true" className="size-4" />
-                </button>
                 <button
                   type="button"
                   aria-label="Close task details"

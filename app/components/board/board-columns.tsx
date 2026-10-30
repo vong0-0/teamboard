@@ -106,7 +106,9 @@ function BoardColumn({
     accept: "task",
     collisionPriority: CollisionPriority.Low,
   });
-  const orderedTasks = [...tasks].sort((left, right) => left.order - right.order);
+  const orderedTasks = [...tasks].sort(
+    (left, right) => left.order - right.order,
+  );
 
   return (
     <section className="border-ink flex min-h-72 w-72 min-w-72 flex-col gap-2 border-2 bg-gray-100 p-2">
@@ -191,20 +193,7 @@ function BoardTaskCard({
   return (
     <article
       ref={ref}
-      role="button"
-      tabIndex={0}
-      aria-label={`Open task ${task.key}: ${task.title}`}
-      onClick={() => {
-        if (!isDragging) onSelect(task);
-      }}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" && !isDragging) {
-          event.preventDefault();
-          event.stopPropagation();
-          onSelect(task);
-        }
-      }}
-      className={`border-ink shadow-hard-sm cursor-grab rounded-sm border-2 p-2 touch-pan-y active:cursor-grabbing ${isDone ? "bg-gray-100" : "bg-paper"} ${isDragging ? "opacity-40" : ""}`}
+      className={`border-ink shadow-hard-sm cursor-grab touch-pan-y rounded-sm border-2 p-2 active:cursor-grabbing ${isDone ? "bg-gray-100" : "bg-paper"} ${isDragging ? "opacity-40" : ""}`}
     >
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 flex-wrap items-center gap-1">
@@ -235,11 +224,14 @@ function BoardTaskCard({
         ) : null}
       </div>
 
-      <h3
-        className={`mt-1.5 text-[11px] leading-snug font-bold ${isDone ? "text-gray-500 line-through" : "text-ink"}`}
+      <button
+        type="button"
+        aria-label={`Open task ${task.key}: ${task.title}`}
+        onClick={() => onSelect(task)}
+        className={`mt-1.5 block w-fit cursor-pointer text-left text-[11px] leading-snug font-bold hover:underline ${isDone ? "text-gray-500 line-through" : "text-ink"}`}
       >
         {task.title}
-      </h3>
+      </button>
 
       {task.subtasks.length > 0 ? (
         <p className="mt-1 font-mono text-[8px] text-gray-500">
