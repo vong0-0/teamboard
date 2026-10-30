@@ -32,6 +32,7 @@ type TaskDrawerProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onTaskSelect: (task: Task) => void;
+  onTaskEdit: (task: Task) => void;
   onTaskDelete: (taskId: number) => void;
   onSubtasksChange: (
     taskId: number,
@@ -51,6 +52,7 @@ export function TaskDrawer({
   open,
   onOpenChange,
   onTaskSelect,
+  onTaskEdit,
   onTaskDelete,
   onSubtasksChange,
 }: TaskDrawerProps) {
@@ -157,6 +159,7 @@ export function TaskDrawer({
                 </SheetTitle>
                 <button
                   type="button"
+                  onClick={() => onTaskEdit(task)}
                   className="border-ink bg-paper shrink-0 rounded-sm border-2 px-3 py-1.5 text-xs font-medium"
                 >
                   Edit

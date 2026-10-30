@@ -9,12 +9,15 @@ import {
 } from "~/components/board/board-columns";
 import { BoardList } from "~/components/board/board-list";
 import { TaskDrawer } from "~/components/board/task-drawer";
+import { TaskForm } from "~/components/board/task-form";
+import { createTaskFromForm } from "~/components/board/task-form-utils";
+import type { TaskFormValues } from "~/components/board/task-form-schema";
 import type { BoardView } from "~/components/board/board-view-tabs";
 import { SidebarTrigger } from "~/components/layout/sidebar-trigger";
 import { Topbar } from "~/components/layout/topbar";
 import { mockProjects } from "~/mock-data/projects";
 import { mockBoardColumns, mockBoardTasks } from "~/mock-data/board";
-import type { Subtask } from "~/type";
+import type { Subtask, Task } from "~/type";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -37,6 +40,9 @@ export default function Board() {
     createInitialTasksByColumn,
   );
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+  const [taskFormOpen, setTaskFormOpen] = useState(false);
+  const [taskBeingEdited, setTaskBeingEdited] = useState<Task | null>(null);
+  const [newTaskColumnId, setNewTaskColumnId] = useState<number | undefined>();
   const view = getBoardView(searchParams.get("view"));
   const tasks = Object.values(tasksByColumn).flat();
   const selectedTask = selectedTaskId
@@ -60,6 +66,11 @@ export default function Board() {
           onProjectSelect={setSelectedProjectId}
           view={view}
           onViewChange={handleViewChange}
+          onNewTask={() => {
+            setTaskBeingEdited(null);
+            setNewTaskColumnId(undefined);
+            setTaskFormOpen(true);
+          }}
         />
         {selectedProjectId ? (
           view === "board" ? (
@@ -67,6 +78,11 @@ export default function Board() {
               tasksByColumn={tasksByColumn}
               onTasksChange={setTasksByColumn}
               onTaskSelect={(task) => setSelectedTaskId(task.id)}
+              onTaskCreate={(columnId) => {
+                setTaskBeingEdited(null);
+                setNewTaskColumnId(columnId);
+                setTaskFormOpen(true);
+              }}
             />
           ) : view === "list" ? (
             <BoardList
@@ -91,6 +107,11 @@ export default function Board() {
           if (!open) setSelectedTaskId(null);
         }}
         onTaskSelect={(nextTask) => setSelectedTaskId(nextTask.id)}
+        onTaskEdit={(task) => {
+          setTaskBeingEdited(task);
+          setSelectedTaskId(null);
+          setTaskFormOpen(true);
+        }}
         onTaskDelete={(taskId) => {
           setTasksByColumn((current) =>
             Object.fromEntries(
@@ -120,6 +141,47 @@ export default function Board() {
               ]),
             ),
           );
+        }}
+      />
+      <TaskForm
+        open={taskFormOpen}
+        task={taskBeingEdited}
+        projectId={selectedProjectId}
+        initialColumnId={newTaskColumnId}
+        onOpenChange={(open) => {
+          setTaskFormOpen(open);
+          if (!open) {
+            setTaskBeingEdited(null);
+            setNewTaskColumnId(undefined);
+          }
+        }}
+        onSubmit={(values: TaskFormValues) => {
+          const currentTasks = Object.values(tasksByColumn).flat();
+          const nextTask = createTaskFromForm(
+            values,
+            taskBeingEdited,
+            currentTasks,
+          );
+
+          setTasksByColumn((current) => {
+            const next = Object.fromEntries(
+              Object.entries(current).map(([columnId, columnTasks]) => [
+                columnId,
+                columnTasks
+                  .filter((task) => task.id !== nextTask.id)
+                  .map((task, order) => ({ ...task, order })),
+              ]),
+            );
+            const destination = String(nextTask.columnId);
+            const destinationTasks = next[destination] ?? [];
+            next[destination] = [...destinationTasks, nextTask]
+              .sort((left, right) => left.order - right.order)
+              .map((task, order) => ({ ...task, order }));
+            return next;
+          });
+          setTaskFormOpen(false);
+          setTaskBeingEdited(null);
+          setNewTaskColumnId(undefined);
         }}
       />
     </>

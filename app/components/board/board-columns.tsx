@@ -26,6 +26,7 @@ type BoardColumnsProps = {
   tasksByColumn: BoardTasksByColumn;
   onTasksChange: Dispatch<SetStateAction<BoardTasksByColumn>>;
   onTaskSelect: (task: Task) => void;
+  onTaskCreate: (columnId: number) => void;
 };
 
 const priorityClasses = {
@@ -38,6 +39,7 @@ export function BoardColumns({
   tasksByColumn,
   onTasksChange,
   onTaskSelect,
+  onTaskCreate,
 }: BoardColumnsProps) {
   const previousTasksByColumn = useRef(tasksByColumn);
   const columns = [...mockBoardColumns].sort(
@@ -84,6 +86,7 @@ export function BoardColumns({
             column={column}
             tasks={tasksByColumn[String(column.id)] ?? []}
             onTaskSelect={onTaskSelect}
+            onTaskCreate={onTaskCreate}
           />
         ))}
       </section>
@@ -95,10 +98,12 @@ function BoardColumn({
   column,
   tasks,
   onTaskSelect,
+  onTaskCreate,
 }: {
   column: BoardColumnData;
   tasks: Task[];
   onTaskSelect: (task: Task) => void;
+  onTaskCreate: (columnId: number) => void;
 }) {
   const { ref, isDropTarget } = useDroppable({
     id: String(column.id),
@@ -123,6 +128,7 @@ function BoardColumn({
           <button
             type="button"
             aria-label={`Add task to ${column.label}`}
+            onClick={() => onTaskCreate(column.id)}
             className="border-ink bg-paper text-ink flex size-5 items-center justify-center rounded-sm border"
           >
             <Plus aria-hidden="true" className="size-3" />
@@ -155,6 +161,7 @@ function BoardColumn({
       <button
         type="button"
         aria-label={`Add card to ${column.label}`}
+        onClick={() => onTaskCreate(column.id)}
         className="border-ink hover:bg-paper mt-auto flex min-h-6 items-center justify-center gap-1 rounded-sm border border-dashed px-2 font-mono text-[9px] text-gray-500"
       >
         <Plus aria-hidden="true" className="size-3" />

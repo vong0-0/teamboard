@@ -13,6 +13,7 @@ type BoardHeaderProps = {
   onProjectSelect: (projectId: string) => void;
   view: BoardView;
   onViewChange: (view: BoardView) => void;
+  onNewTask: () => void;
 };
 
 export function BoardHeader({
@@ -20,6 +21,7 @@ export function BoardHeader({
   onProjectSelect,
   view,
   onViewChange,
+  onNewTask,
 }: BoardHeaderProps) {
   const hasSelectedProject = Boolean(selectedProjectId);
 
@@ -65,6 +67,7 @@ export function BoardHeader({
               <Button
                 type="button"
                 disabled={!hasSelectedProject}
+                onClick={onNewTask}
                 className="border-ink bg-ink text-paper shadow-hard-sm button-press-sm hover:text-ink rounded-sm border-2 px-4 py-2 text-xs hover:bg-gray-200 disabled:border-gray-500 disabled:bg-gray-200 disabled:text-gray-500 disabled:opacity-100 disabled:shadow-none sm:px-5 sm:text-sm"
               >
                 + New task
