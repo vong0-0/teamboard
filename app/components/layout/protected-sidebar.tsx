@@ -52,7 +52,7 @@ const sidebarData = {
     },
     {
       title: "Boards",
-      url: "/dashboard",
+      url: "/board",
       icon: Presentation,
     },
     {
