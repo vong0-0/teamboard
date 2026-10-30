@@ -13,6 +13,7 @@ import {
   UserRoundCheckIcon,
   DownloadIcon,
   Trash2Icon,
+  CopyIcon,
 } from "lucide-react";
 
 const toast = ToastPrimitive.createToastManager();
@@ -177,6 +178,9 @@ function ToastIcon({ type }: { type: string | undefined }) {
   if (type === "delete") {
     icon = <Trash2Icon className="text-paper size-3.5" aria-hidden="true" />;
   }
+  if (type === "duplicate") {
+    icon = <CopyIcon className="text-paper size-3.5" aria-hidden="true" />;
+  }
 
   if (!icon) {
     return null;
@@ -196,7 +200,7 @@ function ToastList() {
   const { toasts } = ToastPrimitive.useToastManager();
 
   return toasts.map((toastItem) => {
-    const isProjectAction = ["archive", "assign", "export", "delete"].includes(
+    const isProjectAction = ["archive", "assign", "export", "delete", "duplicate"].includes(
       toastItem.type ?? "",
     );
 
@@ -218,9 +222,9 @@ function ToastList() {
               className={cn(
                 "flex size-5 shrink-0 items-center justify-center rounded-sm",
                 toastItem.type === "delete"
-                  ? "bg-warn"
+                  ? "bg-accent"
                   : toastItem.type === "archive"
-                    ? "bg-accent"
+                    ? "bg-warn"
                     : "bg-ok",
               )}
             >
