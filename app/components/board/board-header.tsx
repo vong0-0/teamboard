@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarGroup } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { PageHeader } from "~/components/shared/page-header";
 import { BoardProjectSelector } from "~/components/board/project-selector";
+import { BoardViewTabs } from "~/components/board/board-view-tabs";
 
 const onlineMembers = ["HP", "OP", "MC"];
 
@@ -66,6 +67,11 @@ export function BoardHeader({
           </div>
         }
       />
+      {hasSelectedProject ? (
+        <div className="mt-8">
+          <BoardViewTabs />
+        </div>
+      ) : null}
     </div>
   );
 }
