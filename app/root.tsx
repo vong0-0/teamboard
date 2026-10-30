@@ -17,6 +17,14 @@ export default function App() {
   return <Outlet />;
 }
 
+export function HydrateFallback() {
+  return (
+    <div className="page-content flex min-h-[calc(100vh-44px)] items-center justify-center">
+      <p className="font-mono text-xs font-bold">Loading Teamboard…</p>
+    </div>
+  );
+}
+
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   const status = getErrorStatus(error);
   return <ErrorPage status={status} />;
