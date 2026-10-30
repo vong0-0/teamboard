@@ -10,6 +10,9 @@ import {
   TriangleAlertIcon,
   OctagonXIcon,
   Loader2Icon,
+  UserRoundCheckIcon,
+  DownloadIcon,
+  Trash2Icon,
 } from "lucide-react";
 
 const toast = ToastPrimitive.createToastManager();
@@ -163,6 +166,17 @@ function ToastIcon({ type }: { type: string | undefined }) {
       <CircleCheckIcon className="text-paper size-3.5" aria-hidden="true" />
     );
   }
+  if (type === "assign") {
+    icon = (
+      <UserRoundCheckIcon className="text-paper size-3.5" aria-hidden="true" />
+    );
+  }
+  if (type === "export") {
+    icon = <DownloadIcon className="text-paper size-3.5" aria-hidden="true" />;
+  }
+  if (type === "delete") {
+    icon = <Trash2Icon className="text-paper size-3.5" aria-hidden="true" />;
+  }
 
   if (!icon) {
     return null;
@@ -181,69 +195,78 @@ function ToastIcon({ type }: { type: string | undefined }) {
 function ToastList() {
   const { toasts } = ToastPrimitive.useToastManager();
 
-  return toasts.map((toastItem) => (
-    <Toast
-      key={toastItem.id}
-      toast={toastItem}
-      className={
-        toastItem.type === "archive"
-          ? "border-ink bg-paper text-ink shadow-hard w-[278px] rounded-none border-2"
-          : undefined
-      }
-    >
-      <ToastContent
+  return toasts.map((toastItem) => {
+    const isProjectAction = ["archive", "assign", "export", "delete"].includes(
+      toastItem.type ?? "",
+    );
+
+    return (
+      <Toast
+        key={toastItem.id}
+        toast={toastItem}
         className={
-          toastItem.type === "archive" ? "relative gap-2.5 p-2.5" : undefined
+          isProjectAction
+            ? "border-ink bg-paper text-ink shadow-hard w-[278px] rounded-none border-2"
+            : undefined
         }
       >
-        {toastItem.type === "archive" ? (
-          <span className="bg-accent flex size-5 shrink-0 items-center justify-center rounded-sm">
-            <ToastIcon type={toastItem.type} />
-          </span>
-        ) : (
-          <ToastIcon type={toastItem.type} />
-        )}
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <ToastTitle
-            className={
-              toastItem.type === "archive" ? "text-[10px] font-bold" : undefined
-            }
-          />
-          <ToastDescription
-            className={
-              toastItem.type === "archive"
-                ? "text-[9px] leading-tight text-gray-500"
-                : undefined
-            }
-          />
-        </div>
-        {toastItem.type === "archive" ? (
-          <ToastAction
-            render={
-              <button className="text-ink shrink-0 font-mono text-[8px] font-bold underline underline-offset-2" />
-            }
-          />
-        ) : (
-          <ToastAction />
-        )}
-        <ToastClose
-          className={
-            toastItem.type === "archive" ? "text-ink size-3" : undefined
-          }
-          render={
-            toastItem.type === "archive" ? (
-              <button className="text-ink shrink-0 p-0.5" />
-            ) : undefined
-          }
+        <ToastContent
+          className={isProjectAction ? "relative gap-2.5 p-2.5" : undefined}
         >
-          <XIcon className="size-3" />
-        </ToastClose>
-        {toastItem.type === "archive" ? (
-          <span className="bg-ink absolute inset-x-0 bottom-0 h-1 origin-left animate-[toast-progress_5s_linear_forwards]" />
-        ) : null}
-      </ToastContent>
-    </Toast>
-  ));
+          {isProjectAction ? (
+            <span
+              className={cn(
+                "flex size-5 shrink-0 items-center justify-center rounded-sm",
+                toastItem.type === "delete"
+                  ? "bg-warn"
+                  : toastItem.type === "archive"
+                    ? "bg-accent"
+                    : "bg-ok",
+              )}
+            >
+              <ToastIcon type={toastItem.type} />
+            </span>
+          ) : (
+            <ToastIcon type={toastItem.type} />
+          )}
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+            <ToastTitle
+              className={isProjectAction ? "text-[10px] font-bold" : undefined}
+            />
+            <ToastDescription
+              className={
+                isProjectAction
+                  ? "text-[9px] leading-tight text-gray-500"
+                  : undefined
+              }
+            />
+          </div>
+          {isProjectAction ? (
+            <ToastAction
+              render={
+                <button className="text-ink shrink-0 font-mono text-[8px] font-bold underline underline-offset-2" />
+              }
+            />
+          ) : (
+            <ToastAction />
+          )}
+          <ToastClose
+            className={isProjectAction ? "text-ink size-3" : undefined}
+            render={
+              isProjectAction ? (
+                <button className="text-ink shrink-0 p-0.5" />
+              ) : undefined
+            }
+          >
+            <XIcon className="size-3" />
+          </ToastClose>
+          {isProjectAction ? (
+            <span className="bg-ink absolute inset-x-0 bottom-0 h-1 origin-left animate-[toast-progress_5s_linear_forwards]" />
+          ) : null}
+        </ToastContent>
+      </Toast>
+    );
+  });
 }
 
 function Toaster({

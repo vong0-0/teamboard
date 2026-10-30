@@ -93,16 +93,47 @@ export function ProjectsTable() {
     setSelected([]);
   }
 
+  function handleBulkAction(action: "assign" | "export" | "delete") {
+    const selectedCount = selected.length;
+    if (selectedCount === 0) return;
+
+    const messages = {
+      assign: {
+        title: "Projects assigned",
+        description: `${selectedCount} ${selectedCount === 1 ? "project" : "projects"} assigned to someone.`,
+      },
+      export: {
+        title: "Export complete",
+        description: `${selectedCount} ${selectedCount === 1 ? "project" : "projects"} exported.`,
+      },
+      delete: {
+        title: "Projects deleted",
+        description: `${selectedCount} ${selectedCount === 1 ? "project" : "projects"} deleted.`,
+      },
+    };
+
+    toast.add({
+      ...messages[action],
+      type: action,
+      timeout: 5000,
+      actionProps: {
+        children: action === "export" ? "EXPORT" : "UNDO",
+      },
+    });
+
+    if (action !== "assign") setSelected([]);
+  }
+
   return (
     <>
     {selected.length > 0 ? (
       <div className="border-ink mt-4 flex min-h-10 flex-wrap items-center justify-between gap-2 border-2 bg-ink px-2.5 py-1.5 text-paper shadow-hard-sm">
         <span className="font-mono text-[10px] font-bold">{selected.length} selected</span>
         <div className="flex items-center gap-1.5">
-          <Button variant="outline" size="xs" className="border-paper bg-ink text-paper h-6 rounded-sm border px-2 font-mono text-[9px] hover:bg-paper hover:text-ink">Assign</Button>
+          <Button variant="outline" size="xs" onClick={() => handleBulkAction("assign")} className="border-paper bg-ink text-paper h-6 rounded-sm border px-2 font-mono text-[9px] hover:bg-paper hover:text-ink">Assign</Button>
           <Button variant="outline" size="xs" onClick={handleArchive} className="border-paper bg-ink text-paper h-6 rounded-sm border px-2 font-mono text-[9px] hover:bg-paper hover:text-ink">Archive</Button>
-          <Button variant="outline" size="xs" className="border-paper bg-ink text-paper h-6 rounded-sm border px-2 font-mono text-[9px] hover:bg-paper hover:text-ink">Export</Button>
-          <Button variant="outline" size="xs" className="border-ink bg-accent text-paper h-6 rounded-sm border px-2 font-mono text-[9px] hover:bg-accent/90 hover:text-paper">
+          <Button variant="outline" size="xs" onClick={() => handleBulkAction("export")} className="border-paper bg-ink text-paper h-6 rounded-sm border px-2 font-mono text-[9px] hover:bg-paper hover:text-ink">Export</Button>
+          <Button variant="outline" size="xs" onClick={() => handleBulkAction("delete")} className="border-ink bg-accent text-paper h-6 rounded-sm border px-2 font-mono text-[9px] hover:bg-accent/90 hover:text-paper">
             Delete
           </Button>
           <button type="button" onClick={() => setSelected([])} className="text-paper px-1 font-mono text-[9px] hover:underline">
