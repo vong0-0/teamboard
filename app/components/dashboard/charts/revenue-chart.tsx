@@ -9,6 +9,7 @@ import {
   YAxis,
 } from "recharts";
 import { ChartContainer } from "~/components/ui/chart";
+import { formatUSD } from "~/lib/format-currency";
 import { cn } from "cn";
 
 type Period = "7D" | "30D" | "1Y";
@@ -62,12 +63,6 @@ const chartConfig = {
   revenue: { label: "Revenue", color: "var(--color-ink)" },
 };
 
-const currency = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
-
 export function RevenueChart() {
   const [period, setPeriod] = useState<Period>("30D");
   const data = revenueByPeriod[period];
@@ -96,7 +91,7 @@ export function RevenueChart() {
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3 pb-3">
           <div className="flex items-center gap-2.5">
             <p className="font-mono text-xl font-bold sm:text-2xl">
-              {currency.format(total)}
+              {formatUSD(total)}
             </p>
             <span className="border-ink bg-ok rounded-sm border-2 px-1.5 py-0.5 font-mono text-[10px] font-bold">
               {change}
@@ -161,7 +156,7 @@ export function RevenueChart() {
                       {label} 2026
                     </p>
                     <p className="font-mono text-xs font-bold">
-                      {currency.format(value)}
+                      {formatUSD(value)}
                     </p>
                   </div>
                 );
