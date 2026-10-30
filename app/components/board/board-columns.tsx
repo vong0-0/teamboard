@@ -1,3 +1,8 @@
+import { useRef, useState } from "react";
+import { CollisionPriority } from "@dnd-kit/abstract";
+import { move } from "@dnd-kit/helpers";
+import { DragDropProvider, useDroppable } from "@dnd-kit/react";
+import { useSortable } from "@dnd-kit/react/sortable";
 import {
   CalendarDays,
   Check,
@@ -22,30 +27,87 @@ const priorityClasses = {
 } as const;
 
 export function BoardColumns() {
+  const [tasksByColumn, setTasksByColumn] = useState(createInitialTasksByColumn);
+  const previousTasksByColumn = useRef(tasksByColumn);
   const columns = [...mockBoardColumns].sort(
     (left, right) => left.order - right.order,
   );
 
   return (
-    <section
-      aria-label="Project board columns"
-      className="board-scrollbar flex min-w-0 gap-4 overflow-x-auto pb-6"
+    <DragDropProvider
+      onDragStart={() => {
+        previousTasksByColumn.current = tasksByColumn;
+      }}
+      onDragOver={(event) => {
+        if (event.operation.source?.type !== "task") return;
+
+        setTasksByColumn((current) => {
+          const moved = move(current, event);
+          if (moved === current) return current;
+
+          return Object.fromEntries(
+            Object.entries(moved).map(([columnId, tasks]) => [
+              columnId,
+              tasks.map((task, order) => ({
+                ...task,
+                columnId: Number(columnId),
+                order,
+              })),
+            ]),
+          );
+        });
+      }}
+      onDragEnd={(event) => {
+        if (event.canceled) {
+          setTasksByColumn(previousTasksByColumn.current);
+        }
+      }}
     >
-      {columns.map((column) => (
-        <BoardColumn key={column.id} column={column} />
-      ))}
-    </section>
+      <section
+        aria-label="Project board columns"
+        className="board-scrollbar flex min-w-0 gap-4 overflow-x-auto pb-6"
+      >
+        {columns.map((column) => (
+          <BoardColumn
+            key={column.id}
+            column={column}
+            tasks={tasksByColumn[String(column.id)] ?? []}
+          />
+        ))}
+      </section>
+    </DragDropProvider>
   );
 }
 
-function BoardColumn({ column }: { column: BoardColumnData }) {
-  const tasks = mockBoardTasks
-    .filter(
-      (task) =>
-        task.columnId === column.id &&
-        (task.sprintId === null || task.sprintId === 14),
-    )
-    .sort((left, right) => left.order - right.order);
+function createInitialTasksByColumn() {
+  return Object.fromEntries(
+    mockBoardColumns.map((column) => [
+      String(column.id),
+      mockBoardTasks
+        .filter(
+          (task) =>
+            task.columnId === column.id &&
+            (task.sprintId === null || task.sprintId === 14),
+        )
+        .sort((left, right) => left.order - right.order),
+    ]),
+  );
+}
+
+function BoardColumn({
+  column,
+  tasks,
+}: {
+  column: BoardColumnData;
+  tasks: Task[];
+}) {
+  const { ref, isDropTarget } = useDroppable({
+    id: String(column.id),
+    type: "column",
+    accept: "task",
+    collisionPriority: CollisionPriority.Low,
+  });
+  const orderedTasks = [...tasks].sort((left, right) => left.order - right.order);
 
   return (
     <section className="border-ink flex min-h-72 w-72 min-w-72 flex-col gap-2 border-2 bg-gray-100 p-2">
@@ -54,7 +116,7 @@ function BoardColumn({ column }: { column: BoardColumnData }) {
           {column.label}
         </h2>
         <span className="border-ink bg-paper rounded-sm border px-1.5 py-0.5 font-mono text-[9px] leading-none font-bold">
-          {tasks.length}
+          {orderedTasks.length}
         </span>
         <div className="ml-auto flex items-center gap-1">
           <button
@@ -74,9 +136,17 @@ function BoardColumn({ column }: { column: BoardColumnData }) {
         </div>
       </header>
 
-      <div className="flex flex-col gap-2">
-        {tasks.map((task) => (
-          <BoardTaskCard key={task.id} task={task} isDone={column.isDone} />
+      <div
+        ref={ref}
+        className={`flex min-h-10 flex-1 flex-col gap-2 rounded-sm transition-colors ${isDropTarget ? "bg-gray-200" : ""}`}
+      >
+        {orderedTasks.map((task, index) => (
+          <BoardTaskCard
+            key={task.id}
+            task={task}
+            column={column}
+            index={index}
+          />
         ))}
       </div>
 
@@ -92,7 +162,23 @@ function BoardColumn({ column }: { column: BoardColumnData }) {
   );
 }
 
-function BoardTaskCard({ task, isDone }: { task: Task; isDone: boolean }) {
+function BoardTaskCard({
+  task,
+  column,
+  index,
+}: {
+  task: Task;
+  column: BoardColumnData;
+  index: number;
+}) {
+  const { ref, isDragging } = useSortable({
+    id: task.id,
+    index,
+    group: String(column.id),
+    type: "task",
+    accept: "task",
+  });
+  const isDone = column.isDone;
   const assignees = mockBoardAssignees.filter((assignee) =>
     task.assigneeIds.includes(assignee.id),
   );
@@ -102,7 +188,9 @@ function BoardTaskCard({ task, isDone }: { task: Task; isDone: boolean }) {
 
   return (
     <article
-      className={`border-ink shadow-hard-sm rounded-sm border-2 p-2 ${isDone ? "bg-gray-100" : "bg-paper"}`}
+      ref={ref}
+      tabIndex={0}
+      className={`border-ink shadow-hard-sm cursor-grab rounded-sm border-2 p-2 touch-pan-y active:cursor-grabbing ${isDone ? "bg-gray-100" : "bg-paper"} ${isDragging ? "opacity-40" : ""}`}
     >
       <div className="flex items-center justify-between gap-2">
         <div className="flex min-w-0 flex-wrap items-center gap-1">

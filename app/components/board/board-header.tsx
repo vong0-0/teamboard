@@ -2,17 +2,24 @@ import { Avatar, AvatarFallback, AvatarGroup } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { PageHeader } from "~/components/shared/page-header";
 import { BoardProjectSelector } from "~/components/board/project-selector";
-import { BoardViewTabs } from "~/components/board/board-view-tabs";
+import {
+  BoardViewTabs,
+  type BoardView,
+} from "~/components/board/board-view-tabs";
 import { mockOnlineBoardMembers } from "~/mock-data/board";
 
 type BoardHeaderProps = {
   selectedProjectId: string;
   onProjectSelect: (projectId: string) => void;
+  view: BoardView;
+  onViewChange: (view: BoardView) => void;
 };
 
 export function BoardHeader({
   selectedProjectId,
   onProjectSelect,
+  view,
+  onViewChange,
 }: BoardHeaderProps) {
   const hasSelectedProject = Boolean(selectedProjectId);
 
@@ -68,7 +75,7 @@ export function BoardHeader({
       />
       {hasSelectedProject ? (
         <div className="mt-8">
-          <BoardViewTabs />
+          <BoardViewTabs value={view} onValueChange={onViewChange} />
         </div>
       ) : null}
     </>

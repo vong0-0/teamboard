@@ -4,9 +4,22 @@ import {
   TabsTrigger,
 } from "~/components/ui/tabs";
 
-export function BoardViewTabs() {
+export type BoardView = "board" | "list" | "timeline";
+
+type BoardViewTabsProps = {
+  value: BoardView;
+  onValueChange: (value: BoardView) => void;
+};
+
+export function BoardViewTabs({ value, onValueChange }: BoardViewTabsProps) {
   return (
-    <Tabs defaultValue="board" className="gap-0">
+    <Tabs
+      value={value}
+      onValueChange={(nextValue) => {
+        if (isBoardView(nextValue)) onValueChange(nextValue);
+      }}
+      className="gap-0"
+    >
       <TabsList
         aria-label="Board view"
         className="border-ink divide-ink h-[39px] divide-x-2 rounded-sm border-2 bg-paper p-0 text-gray-500 shadow-hard-sm group-data-horizontal/tabs:h-[39px]"
@@ -32,4 +45,8 @@ export function BoardViewTabs() {
       </TabsList>
     </Tabs>
   );
+}
+
+function isBoardView(value: unknown): value is BoardView {
+  return value === "board" || value === "list" || value === "timeline";
 }
