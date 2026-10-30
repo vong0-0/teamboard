@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
+import type { Dispatch, SetStateAction } from "react";
 import { CollisionPriority } from "@dnd-kit/abstract";
 import { move } from "@dnd-kit/helpers";
 import { DragDropProvider, useDroppable } from "@dnd-kit/react";
@@ -16,9 +17,16 @@ import {
   mockBoardAssignees,
   mockBoardColumns,
   mockBoardLabels,
-  mockBoardTasks,
 } from "~/mock-data/board";
 import type { BoardColumn as BoardColumnData, Task } from "~/type";
+
+export type BoardTasksByColumn = Record<string, Task[]>;
+
+type BoardColumnsProps = {
+  tasksByColumn: BoardTasksByColumn;
+  onTasksChange: Dispatch<SetStateAction<BoardTasksByColumn>>;
+  onTaskSelect: (task: Task) => void;
+};
 
 const priorityClasses = {
   low: "bg-ok",
@@ -26,8 +34,11 @@ const priorityClasses = {
   high: "bg-accent",
 } as const;
 
-export function BoardColumns() {
-  const [tasksByColumn, setTasksByColumn] = useState(createInitialTasksByColumn);
+export function BoardColumns({
+  tasksByColumn,
+  onTasksChange,
+  onTaskSelect,
+}: BoardColumnsProps) {
   const previousTasksByColumn = useRef(tasksByColumn);
   const columns = [...mockBoardColumns].sort(
     (left, right) => left.order - right.order,
@@ -41,7 +52,7 @@ export function BoardColumns() {
       onDragOver={(event) => {
         if (event.operation.source?.type !== "task") return;
 
-        setTasksByColumn((current) => {
+        onTasksChange((current) => {
           const moved = move(current, event);
           if (moved === current) return current;
 
@@ -59,7 +70,7 @@ export function BoardColumns() {
       }}
       onDragEnd={(event) => {
         if (event.canceled) {
-          setTasksByColumn(previousTasksByColumn.current);
+          onTasksChange(previousTasksByColumn.current);
         }
       }}
     >
@@ -72,6 +83,7 @@ export function BoardColumns() {
             key={column.id}
             column={column}
             tasks={tasksByColumn[String(column.id)] ?? []}
+            onTaskSelect={onTaskSelect}
           />
         ))}
       </section>
@@ -79,27 +91,14 @@ export function BoardColumns() {
   );
 }
 
-function createInitialTasksByColumn() {
-  return Object.fromEntries(
-    mockBoardColumns.map((column) => [
-      String(column.id),
-      mockBoardTasks
-        .filter(
-          (task) =>
-            task.columnId === column.id &&
-            (task.sprintId === null || task.sprintId === 14),
-        )
-        .sort((left, right) => left.order - right.order),
-    ]),
-  );
-}
-
 function BoardColumn({
   column,
   tasks,
+  onTaskSelect,
 }: {
   column: BoardColumnData;
   tasks: Task[];
+  onTaskSelect: (task: Task) => void;
 }) {
   const { ref, isDropTarget } = useDroppable({
     id: String(column.id),
@@ -146,6 +145,7 @@ function BoardColumn({
             task={task}
             column={column}
             index={index}
+            onSelect={onTaskSelect}
           />
         ))}
       </div>
@@ -166,10 +166,12 @@ function BoardTaskCard({
   task,
   column,
   index,
+  onSelect,
 }: {
   task: Task;
   column: BoardColumnData;
   index: number;
+  onSelect: (task: Task) => void;
 }) {
   const { ref, isDragging } = useSortable({
     id: task.id,
@@ -189,7 +191,19 @@ function BoardTaskCard({
   return (
     <article
       ref={ref}
+      role="button"
       tabIndex={0}
+      aria-label={`Open task ${task.key}: ${task.title}`}
+      onClick={() => {
+        if (!isDragging) onSelect(task);
+      }}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" && !isDragging) {
+          event.preventDefault();
+          event.stopPropagation();
+          onSelect(task);
+        }
+      }}
       className={`border-ink shadow-hard-sm cursor-grab rounded-sm border-2 p-2 touch-pan-y active:cursor-grabbing ${isDone ? "bg-gray-100" : "bg-paper"} ${isDragging ? "opacity-40" : ""}`}
     >
       <div className="flex items-center justify-between gap-2">
