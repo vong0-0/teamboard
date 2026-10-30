@@ -56,18 +56,18 @@ const sidebarData = {
       icon: Presentation,
     },
     {
-      title: "Message",
-      url: "/dashboard",
+      title: "Messages",
+      url: "/messages",
       icon: Send,
     },
     {
       title: "Calendar",
-      url: "/dashboard",
+      url: "/calendar",
       icon: Calendar,
     },
     {
       title: "Team",
-      url: "/dashboard",
+      url: "/team",
       icon: FolderUsers,
     },
   ],

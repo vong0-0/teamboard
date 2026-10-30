@@ -11,7 +11,7 @@ const tabs: TabItem[] = [
   { label: "DASHBOARD", letter: "D", to: "/dashboard" },
   { label: "PROJECTS", letter: "P", to: "/projects" },
   { label: "BOARD", letter: "B", to: "/board" },
-  { label: "CHAT", letter: null, to: "/chat", badge: "3" },
+  { label: "MESSAGES", letter: null, to: "/messages", badge: "3" },
   { label: "ME", letter: "M", to: "/profile" },
 ];
 
