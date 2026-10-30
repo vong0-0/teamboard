@@ -12,12 +12,10 @@ import { ProjectStatusTabs } from "~/components/projects/project-status-tabs";
 import { ProjectsToolbar } from "~/components/projects/projects-toolbar";
 import { ProjectsTable } from "~/components/projects/projects-table";
 import { toast } from "~/components/ui/toast";
-import {
-  createProjectFromForm,
-  ProjectForm,
-  type ProjectFormValues,
-} from "~/components/projects/project-form";
+import { ProjectForm } from "~/components/projects/project-form";
 import { mockProjects, type Project } from "~/components/projects/project-data";
+import { createProjectFromForm } from "~/components/projects/project-form-utils";
+import type { ProjectFormValues } from "~/components/projects/project-form-schema";
 
 export function meta({}: Route.MetaArgs) {
   return [

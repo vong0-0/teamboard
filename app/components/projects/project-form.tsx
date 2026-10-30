@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { Dialog } from "@base-ui/react/dialog";
-import * as z from "zod";
 import { AlertTriangle, X } from "lucide-react";
+import { FormField } from "~/components/shared/form-field";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -17,57 +17,12 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import type { Project } from "./project-data";
-
-const owners = [
-  { value: "Mac", label: "Mac Child", initials: "MC" },
-  { value: "Haemin", label: "Haemin Park", initials: "HP" },
-  { value: "Olga", label: "Olga", initials: "OP" },
-  { value: "Jin", label: "Jin", initials: "JS" },
-  { value: "Ana", label: "Ana", initials: "AL" },
-  { value: "Tom", label: "Tom", initials: "TR" },
-] as const;
-
-const sprints = ["Sprint 14", "Sprint 15", "Sprint 13", "No sprint"] as const;
-
-const projectFormSchema = z
-  .object({
-    name: z
-      .string()
-      .trim()
-      .min(1, "Project name is required.")
-      .max(60, "Project name must be 60 characters or fewer."),
-    description: z
-      .string()
-      .max(280, "Description must be 280 characters or fewer."),
-    owner: z.string().min(1, "Choose an owner."),
-    status: z.enum(["ACTIVE", "ON HOLD", "DONE"]),
-    progress: z.number().min(0).max(100),
-    budget: z
-      .string()
-      .refine(
-        (value) =>
-          value === "" || (Number.isFinite(Number(value)) && Number(value) > 0),
-        "Budget must be greater than 0.",
-      ),
-    sprint: z.string().min(1, "Choose a sprint."),
-    startDate: z.string(),
-    dueDate: z.string().min(1, "Due date is required."),
-  })
-  .superRefine((values, context) => {
-    if (
-      values.startDate &&
-      values.dueDate &&
-      values.dueDate <= values.startDate
-    ) {
-      context.addIssue({
-        code: "custom",
-        path: ["dueDate"],
-        message: "Due date must be after the start date.",
-      });
-    }
-  });
-
-export type ProjectFormValues = z.infer<typeof projectFormSchema>;
+import { projectOwners, projectSprints } from "./project-form-options";
+import {
+  projectFormSchema,
+  type ProjectFormValues,
+} from "./project-form-schema";
+import { getProjectFormValues } from "./project-form-utils";
 
 type ProjectFormProps = {
   open: boolean;
@@ -207,7 +162,7 @@ export function ProjectForm({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="window shadow-hard-sm rounded-sm p-1">
-                          {owners.map((owner) => (
+                          {projectOwners.map((owner) => (
                             <SelectItem
                               key={owner.value}
                               value={owner.value}
@@ -348,7 +303,7 @@ export function ProjectForm({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="window shadow-hard-sm rounded-sm p-1">
-                          {sprints.map((sprint) => (
+                          {projectSprints.map((sprint) => (
                             <SelectItem
                               key={sprint}
                               value={sprint}
@@ -435,143 +390,5 @@ export function ProjectForm({
         </Dialog.Popup>
       </Dialog.Portal>
     </Dialog.Root>
-  );
-}
-
-function FormField({
-  label,
-  htmlFor,
-  required = false,
-  error,
-  count,
-  max,
-  children,
-}: {
-  label: string;
-  htmlFor: string;
-  required?: boolean;
-  error?: string;
-  count?: number;
-  max?: number;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="min-w-0 space-y-1">
-      <div className="flex items-center justify-between gap-2">
-        <label htmlFor={htmlFor} className="label text-[9px]">
-          {label} {required ? <span className="text-accent">*</span> : null}
-        </label>
-        {count !== undefined && max !== undefined ? (
-          <span className="font-mono text-[8px] text-gray-500 tabular-nums">
-            {count} / {max}
-          </span>
-        ) : null}
-      </div>
-      {children}
-      {error ? (
-        <p className="text-accent text-[10px] leading-tight">{error}</p>
-      ) : null}
-    </div>
-  );
-}
-
-function getProjectFormValues(project: Project | null): ProjectFormValues {
-  const today = toDateInputValue(new Date());
-  if (!project) {
-    return {
-      name: "",
-      description: "",
-      owner: "Mac",
-      status: "ACTIVE",
-      progress: 0,
-      budget: "",
-      sprint: "Sprint 14",
-      startDate: today,
-      dueDate: "",
-    };
-  }
-
-  const dueDate =
-    project.dueDate || parseDueDate(project.due, new Date().getFullYear());
-  return {
-    name: project.name,
-    description: project.description,
-    owner: project.owner,
-    status: project.status,
-    progress: project.progress,
-    budget: project.budget > 0 ? String(project.budget) : "",
-    sprint: project.sprint || "Sprint 14",
-    startDate: project.startDate || shiftDate(dueDate, -14),
-    dueDate,
-  };
-}
-
-export function createProjectFromForm(
-  values: ProjectFormValues,
-  existing?: Project,
-): Project {
-  const name = values.name.trim();
-  const owner = owners.find((item) => item.value === values.owner) ?? owners[0];
-  return {
-    id: existing?.id ?? `${slugify(name)}-${Date.now()}`,
-    initials: existing?.initials ?? getInitials(name),
-    name,
-    description: values.description.trim(),
-    owner: owner.value,
-    ownerInitials: owner.initials,
-    status: values.status,
-    progress: values.progress,
-    budget: values.budget ? Number(values.budget) : 0,
-    sprint: values.sprint,
-    startDate: values.startDate || undefined,
-    dueDate: values.dueDate,
-    due: formatDueDate(values.dueDate),
-  };
-}
-
-function parseDueDate(label: string, year: number) {
-  const parsed = new Date(`${label} ${year}`);
-  return Number.isNaN(parsed.getTime()) ? "" : toDateInputValue(parsed);
-}
-
-function shiftDate(value: string, days: number) {
-  if (!value) return toDateInputValue(new Date());
-  const date = new Date(`${value}T12:00:00`);
-  date.setDate(date.getDate() + days);
-  return toDateInputValue(date);
-}
-
-function toDateInputValue(date: Date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
-
-function formatDueDate(value: string) {
-  if (!value) return "";
-  const [year, month, day] = value.split("-").map(Number);
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "2-digit",
-  }).format(new Date(year, month - 1, day));
-}
-
-function getInitials(name: string) {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("");
-}
-
-function slugify(value: string) {
-  return (
-    value
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "") || "project"
   );
 }
