@@ -18,5 +18,6 @@ export default [
     route("messages", "routes/messages.tsx"),
     route("calendar", "routes/calendar.tsx"),
     route("team", "routes/team.tsx"),
+    route("profile", "routes/profile.tsx"),
   ]),
 ] satisfies RouteConfig;

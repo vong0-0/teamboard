@@ -265,7 +265,7 @@ function UserNav({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem render={<Link to="/profile" />}>
                 <User />
                 Profile
               </DropdownMenuItem>
