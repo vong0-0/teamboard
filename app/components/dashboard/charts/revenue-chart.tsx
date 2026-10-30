@@ -11,61 +11,18 @@ import {
 import { ChartContainer } from "~/components/ui/chart";
 import { formatUSD } from "~/lib/format-currency";
 import { cn } from "cn";
-
-type Period = "7D" | "30D" | "1Y";
-
-type RevenuePoint = {
-  label: string;
-  value: number;
-};
-
-const revenueByPeriod: Record<Period, RevenuePoint[]> = {
-  "7D": [
-    { label: "MON", value: 6820 },
-    { label: "TUE", value: 7340 },
-    { label: "WED", value: 7050 },
-    { label: "THU", value: 8120 },
-    { label: "FRI", value: 7790 },
-    { label: "SAT", value: 8610 },
-    { label: "SUN", value: 8420 },
-  ],
-  "30D": [
-    { label: "NOV", value: 6120 },
-    { label: "DEC", value: 7280 },
-    { label: "JAN", value: 6820 },
-    { label: "FEB", value: 8420 },
-    { label: "MAR", value: 7790 },
-    { label: "APR", value: 9120 },
-    { label: "MAY", value: 8610 },
-    { label: "JUN", value: 10380 },
-    { label: "JUL", value: 9760 },
-    { label: "AUG", value: 10890 },
-    { label: "SEP", value: 10120 },
-    { label: "OCT", value: 11420 },
-  ],
-  "1Y": [
-    { label: "NOV", value: 24800 },
-    { label: "DEC", value: 28600 },
-    { label: "JAN", value: 27100 },
-    { label: "FEB", value: 33400 },
-    { label: "MAR", value: 31200 },
-    { label: "APR", value: 36800 },
-    { label: "MAY", value: 34500 },
-    { label: "JUN", value: 42100 },
-    { label: "JUL", value: 39700 },
-    { label: "AUG", value: 45800 },
-    { label: "SEP", value: 43100 },
-    { label: "OCT", value: 48290 },
-  ],
-};
+import {
+  mockRevenueByPeriod,
+  type RevenuePeriod,
+} from "~/mock-data/dashboard";
 
 const chartConfig = {
   revenue: { label: "Revenue", color: "var(--color-ink)" },
 };
 
 export function RevenueChart() {
-  const [period, setPeriod] = useState<Period>("30D");
-  const data = revenueByPeriod[period];
+  const [period, setPeriod] = useState<RevenuePeriod>("30D");
+  const data = mockRevenueByPeriod[period];
   const total = period === "30D" ? 48290 : (data.at(-1)?.value ?? 0);
   const change =
     period === "30D" ? "+12.4%" : period === "7D" ? "+8.2%" : "+18.6%";

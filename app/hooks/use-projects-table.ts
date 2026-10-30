@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router";
-import {
-  filterProjects,
-  mockProjects,
-  type Project,
-} from "~/components/projects/project-data";
+import { mockProjects } from "~/mock-data/projects";
+import { filterProjects } from "~/components/projects/project-utils";
+import type { Project } from "~/components/projects/project-types";
 
 export function useProjectsTable(projects: Project[] = mockProjects) {
   const [searchParams] = useSearchParams();

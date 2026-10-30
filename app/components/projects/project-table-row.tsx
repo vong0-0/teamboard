@@ -11,7 +11,7 @@ import { ProjectStatusBadge } from "~/components/shared/project-status-badge";
 import { Track } from "~/components/shared/track";
 import { formatUSD } from "~/lib/format-currency";
 import { TableCell, TableRow } from "~/components/ui/table";
-import type { Project } from "./project-data";
+import type { Project } from "./project-types";
 
 type ProjectTableRowProps = {
   project: Project;

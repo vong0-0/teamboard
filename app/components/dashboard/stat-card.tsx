@@ -1,5 +1,9 @@
 import { cn } from "cn";
 import type { ReactNode } from "react";
+import {
+  mockNeutralStatCardChartPoints,
+  mockStatCardChartPointsByTone,
+} from "~/mock-data/dashboard";
 
 export type StatCardBadgeTone = "positive" | "negative" | "live";
 
@@ -17,19 +21,14 @@ const badgeToneClasses: Record<StatCardBadgeTone, string> = {
   live: "bg-warn",
 };
 
-const chartPointsByTone: Record<StatCardBadgeTone, number[]> = {
-  positive: [3, 7, 5, 11, 9, 14, 16],
-  negative: [15, 13, 14, 9, 12, 8, 6],
-  live: [7, 12, 9, 14, 10, 12, 11],
-};
-const neutralChartPoints = [5, 8, 6, 10, 7, 9, 11];
-
 export function StatCard({
   title,
   value,
   badge,
   badgeTone,
-  chartPoints = badgeTone ? chartPointsByTone[badgeTone] : neutralChartPoints,
+  chartPoints = badgeTone
+    ? mockStatCardChartPointsByTone[badgeTone]
+    : mockNeutralStatCardChartPoints,
 }: StatCardProps) {
   const showBadge =
     badge !== undefined &&

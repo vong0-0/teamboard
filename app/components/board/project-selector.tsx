@@ -8,7 +8,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { mockProjects } from "~/components/projects/project-data";
+import { mockProjects } from "~/mock-data/projects";
 
 type BoardProjectSelectorProps = {
   selectedProjectId: string;

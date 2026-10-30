@@ -7,38 +7,12 @@ import {
   BreadcrumbItem,
   BreadcrumbPage,
 } from "~/components/ui/breadcrumb";
-import { StatCard, type StatCardProps } from "~/components/dashboard/stat-card";
+import { StatCard } from "~/components/dashboard/stat-card";
 import { RevenueChart } from "~/components/dashboard/charts/revenue-chart";
 import { TaskStatusChart } from "~/components/dashboard/charts/task-status-chart";
 import { MyLatestTasks } from "~/components/dashboard/tables/my-latest-tasks";
 import { ActivityLog } from "~/components/dashboard/activity-log";
-
-const dashboardStats = [
-  {
-    title: "Revenue",
-    value: "$48,290",
-    badge: "+12%",
-    badgeTone: "positive",
-  },
-  {
-    title: "Active projects",
-    value: "24",
-    badge: "+3",
-    badgeTone: "positive",
-  },
-  {
-    title: "Open tasks",
-    value: "78",
-    badge: "-8%",
-    badgeTone: "negative",
-  },
-  {
-    title: "Team online",
-    value: "11 / 16",
-    badge: "LIVE",
-    badgeTone: "live",
-  },
-] satisfies StatCardProps[];
+import { mockDashboardStats } from "~/mock-data/dashboard";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -54,7 +28,7 @@ export default function Dashboard() {
       <div className="page-content">
         <DashboardHeader />
         <div className="sidebar:grid-cols-1 mt-6 grid min-w-0 gap-6 @lg/sidebar:grid-cols-2 @5xl/sidebar:grid-cols-4">
-          {dashboardStats.map((stat) => (
+          {mockDashboardStats.map((stat) => (
             <StatCard key={stat.title} {...stat} />
           ))}
         </div>

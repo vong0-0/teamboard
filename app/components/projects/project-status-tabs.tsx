@@ -1,12 +1,6 @@
 import { useSearchParams } from "react-router";
 import { cn } from "cn";
-
-const statuses = [
-  { label: "All", value: "all", count: 24 },
-  { label: "Active", value: "active", count: 12 },
-  { label: "On hold", value: "on-hold", count: 5 },
-  { label: "Done", value: "done", count: 7 },
-] as const;
+import { mockProjectStatusCounts } from "~/mock-data/projects";
 
 export function ProjectStatusTabs() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -30,7 +24,7 @@ export function ProjectStatusTabs() {
       role="tablist"
       aria-label="Filter projects by status"
     >
-      {statuses.map((status) => {
+      {mockProjectStatusCounts.map((status) => {
         const isActive = activeStatus === status.value;
 
         return (

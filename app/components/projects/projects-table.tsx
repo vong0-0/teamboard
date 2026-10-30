@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "~/components/ui/table";
 import { toast } from "~/components/ui/toast";
-import type { Project } from "./project-data";
+import type { Project } from "./project-types";
 import { ProjectTableRow } from "./project-table-row";
 import { ProjectsBulkActions } from "./projects-bulk-actions";
 import { useProjectsTable } from "~/hooks/use-projects-table";

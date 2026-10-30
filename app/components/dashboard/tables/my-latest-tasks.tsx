@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-import { PriorityBadge, type Priority } from "~/components/shared/priority-badge";
+import { PriorityBadge } from "~/components/shared/priority-badge";
+import { mockLatestTasks } from "~/mock-data/dashboard";
 import {
   Table,
   TableBody,
@@ -8,20 +9,6 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-
-const tasks: {
-  title: string;
-  project: string;
-  due: string;
-  priority: Priority;
-  assignee: string;
-}[] = [
-  { title: "Design kanban cards", project: "Retro Kit", due: "Oct 24", priority: "HIGH", assignee: "HP" },
-  { title: "Fix navbar overflow", project: "Marketing", due: "Oct 25", priority: "MED", assignee: "OP" },
-  { title: "Write API docs", project: "Mockapi", due: "Oct 26", priority: "LOW", assignee: "MC" },
-  { title: "Review pull requests", project: "Retro Kit", due: "Oct 27", priority: "HIGH", assignee: "JS" },
-  { title: "Export icon set", project: "Brand", due: "Oct 28", priority: "MED", assignee: "AL" },
-];
 
 export function MyLatestTasks() {
   return (
@@ -45,7 +32,7 @@ export function MyLatestTasks() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tasks.map((task, index) => (
+          {mockLatestTasks.map((task, index) => (
             <TableRow
               key={task.title}
               className={`border-ink border-b hover:bg-gray-100 ${index % 2 === 1 ? "bg-gray-100" : "bg-paper"}`}

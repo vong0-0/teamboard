@@ -1,6 +1,6 @@
 import { getAvatarFallback } from "~/lib/get-avatar-fallback";
-import type { Project } from "./project-data";
-import { projectOwners } from "./project-form-options";
+import { mockProjectOwners } from "~/mock-data/projects";
+import type { Project } from "./project-types";
 import type { ProjectFormValues } from "./project-form-schema";
 
 export function getProjectFormValues(
@@ -42,8 +42,8 @@ export function createProjectFromForm(
 ): Project {
   const name = values.name.trim();
   const owner =
-    projectOwners.find((item) => item.value === values.owner) ??
-    projectOwners[0];
+    mockProjectOwners.find((item) => item.value === values.owner) ??
+    mockProjectOwners[0];
   return {
     id: existing?.id ?? `${slugify(name)}-${Date.now()}`,
     initials: existing?.initials ?? getAvatarFallback(name),

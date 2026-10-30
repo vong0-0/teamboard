@@ -13,7 +13,8 @@ import { ProjectsToolbar } from "~/components/projects/projects-toolbar";
 import { ProjectsTable } from "~/components/projects/projects-table";
 import { toast } from "~/components/ui/toast";
 import { ProjectForm } from "~/components/projects/project-form";
-import { mockProjects, type Project } from "~/components/projects/project-data";
+import { mockProjects } from "~/mock-data/projects";
+import type { Project } from "~/components/projects/project-types";
 import { createProjectFromForm } from "~/components/projects/project-form-utils";
 import type { ProjectFormValues } from "~/components/projects/project-form-schema";
 

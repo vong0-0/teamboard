@@ -3,8 +3,7 @@ import { Button } from "~/components/ui/button";
 import { PageHeader } from "~/components/shared/page-header";
 import { BoardProjectSelector } from "~/components/board/project-selector";
 import { BoardViewTabs } from "~/components/board/board-view-tabs";
-
-const onlineMembers = ["HP", "OP", "MC"];
+import { mockOnlineBoardMembers } from "~/mock-data/board";
 
 type BoardHeaderProps = {
   selectedProjectId: string;
@@ -31,7 +30,7 @@ export function BoardHeader({
           <div className="flex w-full items-center justify-between gap-3 sm:justify-end sm:gap-2">
             <div className="flex min-w-0 items-center gap-2">
               <AvatarGroup className="-space-x-1.5">
-                {onlineMembers.map((member) => (
+                {mockOnlineBoardMembers.map((member) => (
                   <Avatar
                     key={member}
                     className="border-ink size-7 border bg-paper ring-0"
@@ -43,7 +42,7 @@ export function BoardHeader({
                 ))}
               </AvatarGroup>
               <span className="border-ink bg-ok text-ink rounded-sm border px-1.5 py-1 font-mono text-[8px] leading-none font-bold whitespace-nowrap">
-                3 ONLINE
+                {mockOnlineBoardMembers.length} ONLINE
               </span>
             </div>
 

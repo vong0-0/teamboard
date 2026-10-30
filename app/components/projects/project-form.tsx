@@ -16,8 +16,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import type { Project } from "./project-data";
-import { projectOwners, projectSprints } from "./project-form-options";
+import type { Project } from "./project-types";
+import {
+  mockProjectOwners,
+  mockProjectSprints,
+} from "~/mock-data/projects";
 import {
   projectFormSchema,
   type ProjectFormValues,
@@ -162,7 +165,7 @@ export function ProjectForm({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="window shadow-hard-sm rounded-sm p-1">
-                          {projectOwners.map((owner) => (
+                          {mockProjectOwners.map((owner) => (
                             <SelectItem
                               key={owner.value}
                               value={owner.value}
@@ -303,7 +306,7 @@ export function ProjectForm({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="window shadow-hard-sm rounded-sm p-1">
-                          {projectSprints.map((sprint) => (
+                          {mockProjectSprints.map((sprint) => (
                             <SelectItem
                               key={sprint}
                               value={sprint}

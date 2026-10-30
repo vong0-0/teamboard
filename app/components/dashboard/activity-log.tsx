@@ -1,27 +1,5 @@
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-
-const activities = [
-  {
-    initials: "HP",
-    name: "Haemin",
-    action: "moved “Hero” to Done",
-    time: "2m ago",
-  },
-  {
-    initials: "OP",
-    name: "Olga",
-    action: "commented on “API docs”",
-    time: "18m ago",
-  },
-  {
-    initials: "JS",
-    name: "Jin",
-    action: "created project “Brand v2”",
-    time: "1h ago",
-  },
-  { initials: "AL", name: "Ana", action: "uploaded 4 files", time: "3h ago" },
-  { initials: "TR", name: "Tom", action: "closed bug #204", time: "5h ago" },
-];
+import { mockDashboardActivities } from "~/mock-data/dashboard";
 
 export function ActivityLog() {
   return (
@@ -35,7 +13,7 @@ export function ActivityLog() {
       </div>
 
       <ol>
-        {activities.map((activity) => (
+        {mockDashboardActivities.map((activity) => (
           <li
             key={`${activity.name}-${activity.time}`}
             className="border-ink flex items-center gap-2.5 border-b px-3 py-2 last:border-b-0"

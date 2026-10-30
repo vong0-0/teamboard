@@ -1,20 +1,4 @@
-import type { ProjectStatus } from "~/components/shared/project-status-badge";
-
-export type Project = {
-  id: string;
-  initials: string;
-  name: string;
-  description: string;
-  owner: string;
-  ownerInitials: string;
-  status: ProjectStatus;
-  progress: number;
-  budget: number;
-  due: string;
-  startDate?: string;
-  dueDate?: string;
-  sprint?: string;
-};
+import type { Project } from "~/components/projects/project-types";
 
 export const mockProjects: Project[] = [
   { id: "retro-kit", initials: "RE", name: "Retro Kit", description: "Design system", owner: "Haemin", ownerInitials: "HP", status: "ACTIVE", progress: 72, budget: 12400, due: "Nov 12" },
@@ -38,22 +22,25 @@ export const mockProjects: Project[] = [
   { id: "audit-log", initials: "AL", name: "Audit log", description: "Activity history", owner: "Haemin", ownerInitials: "HP", status: "ON HOLD", progress: 42, budget: 14700, due: "Dec 28" },
 ];
 
-export function filterProjects(
-  projects: Project[],
-  search: string,
-  status: string | null,
-) {
-  const normalizedSearch = search.toLowerCase();
+export const mockProjectOwners = [
+  { value: "Mac", label: "Mac Child", initials: "MC" },
+  { value: "Haemin", label: "Haemin Park", initials: "HP" },
+  { value: "Olga", label: "Olga", initials: "OP" },
+  { value: "Jin", label: "Jin", initials: "JS" },
+  { value: "Ana", label: "Ana", initials: "AL" },
+  { value: "Tom", label: "Tom", initials: "TR" },
+] as const;
 
-  return projects.filter((project) => {
-    const matchesSearch = `${project.name} ${project.description} ${project.owner}`
-      .toLowerCase()
-      .includes(normalizedSearch);
-    const matchesStatus =
-      !status ||
-      status === "all" ||
-      project.status.toLowerCase().replace(" ", "-") === status;
+export const mockProjectSprints = [
+  "Sprint 14",
+  "Sprint 15",
+  "Sprint 13",
+  "No sprint",
+] as const;
 
-    return matchesSearch && matchesStatus;
-  });
-}
+export const mockProjectStatusCounts = [
+  { label: "All", value: "all", count: 24 },
+  { label: "Active", value: "active", count: 12 },
+  { label: "On hold", value: "on-hold", count: 5 },
+  { label: "Done", value: "done", count: 7 },
+] as const;
