@@ -62,8 +62,10 @@ export function StatusBar() {
           aria-label="Battery level"
           className="h-4 w-8"
           fill="none"
+          height="16"
           role="img"
           viewBox="0 0 31 14"
+          width="32"
           xmlns="http://www.w3.org/2000/svg"
         >
           <rect

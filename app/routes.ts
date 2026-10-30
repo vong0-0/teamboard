@@ -7,6 +7,9 @@ import {
 
 export default [
   index("routes/index.tsx"),
+  route("403", "routes/403.tsx"),
+  route("404", "routes/404.tsx"),
+  route("500", "routes/500.tsx"),
   layout("routes/layout/protected-layout.tsx", [
     // Add routes that require authentication inside this layout.
     route("dashboard", "routes/dashboard.tsx"),

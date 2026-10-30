@@ -1,11 +1,13 @@
-import {
-  isRouteErrorResponse,
-  Outlet,
-} from "react-router";
+import { isRouteErrorResponse, Outlet } from "react-router";
 
 import type { Route } from "./+types/root";
 import { RootLayout } from "./components/layout/root-layout";
-import "./app.css";
+import { ErrorPage, type ErrorStatus } from "./components/shared/error-page";
+import stylesheetUrl from "./app.css?url";
+
+export function links() {
+  return [{ rel: "stylesheet", href: stylesheetUrl }];
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return <RootLayout>{children}</RootLayout>;
@@ -16,30 +18,13 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
-  let stack: string | undefined;
+  const status = getErrorStatus(error);
+  return <ErrorPage status={status} />;
+}
 
-  if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
-    details =
-      error.status === 404
-        ? "The requested page could not be found."
-        : error.statusText || details;
-  } else if (import.meta.env.DEV && error && error instanceof Error) {
-    details = error.message;
-    stack = error.stack;
-  }
-
-  return (
-    <main className="container mx-auto p-4 pt-16">
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre className="w-full overflow-x-auto p-4">
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
-  );
+function getErrorStatus(error: unknown): ErrorStatus {
+  if (!isRouteErrorResponse(error)) return 500;
+  if (error.status === 403) return 403;
+  if (error.status === 404) return 404;
+  return 500;
 }
