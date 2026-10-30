@@ -12,6 +12,7 @@ import {
 import { Track } from "~/components/shared/track";
 import { ProjectStatusBadge, type ProjectStatus } from "~/components/shared/project-status-badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
+import { toast } from "~/components/ui/toast";
 
 type Project = {
   id: string;
@@ -70,17 +71,37 @@ export function ProjectsTable() {
     setSelected(allSelected ? selected.filter((id) => !pageRows.some((project) => project.id === id)) : [...new Set([...selected, ...pageRows.map((project) => project.id)])]);
   }
 
+  function handleArchive() {
+    const archivedProjects = projects.filter((project) => selected.includes(project.id));
+    if (archivedProjects.length === 0) return;
+
+    const description = archivedProjects.length === 1
+      ? `${archivedProjects[0].name} moved to the archive.`
+      : `${archivedProjects.length} projects moved to the archive.`;
+    const previousSelection = selected;
+
+    toast.add({
+      title: "Project archived",
+      description,
+      type: "archive",
+      timeout: 5000,
+      actionProps: {
+        children: "UNDO",
+        onClick: () => setSelected(previousSelection),
+      },
+    });
+    setSelected([]);
+  }
+
   return (
     <>
     {selected.length > 0 ? (
       <div className="border-ink mt-4 flex min-h-10 flex-wrap items-center justify-between gap-2 border-2 bg-ink px-2.5 py-1.5 text-paper shadow-hard-sm">
         <span className="font-mono text-[10px] font-bold">{selected.length} selected</span>
         <div className="flex items-center gap-1.5">
-          {(["Assign", "Archive", "Export"] as const).map((action) => (
-            <Button key={action} variant="outline" size="xs" className="border-paper bg-ink text-paper h-6 rounded-sm border px-2 font-mono text-[9px] hover:bg-paper hover:text-ink">
-              {action}
-            </Button>
-          ))}
+          <Button variant="outline" size="xs" className="border-paper bg-ink text-paper h-6 rounded-sm border px-2 font-mono text-[9px] hover:bg-paper hover:text-ink">Assign</Button>
+          <Button variant="outline" size="xs" onClick={handleArchive} className="border-paper bg-ink text-paper h-6 rounded-sm border px-2 font-mono text-[9px] hover:bg-paper hover:text-ink">Archive</Button>
+          <Button variant="outline" size="xs" className="border-paper bg-ink text-paper h-6 rounded-sm border px-2 font-mono text-[9px] hover:bg-paper hover:text-ink">Export</Button>
           <Button variant="outline" size="xs" className="border-ink bg-accent text-paper h-6 rounded-sm border px-2 font-mono text-[9px] hover:bg-accent/90 hover:text-paper">
             Delete
           </Button>

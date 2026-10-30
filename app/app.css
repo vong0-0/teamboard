@@ -8,6 +8,11 @@
 @import "@fontsource/space-mono/700.css";
 @custom-variant dark (&:is(.dark *));
 
+@keyframes toast-progress {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
 @theme inline {
   /* Colors */
   --color-ink: #0b0b0b;

@@ -2,6 +2,7 @@ import { Links, Meta, Scripts, ScrollRestoration } from "react-router";
 
 import { SessionHydrator } from "../shared/session-hydrator";
 import { StatusBar } from "./status-bar";
+import { Toaster } from "../ui/toast";
 
 export function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -18,6 +19,7 @@ export function RootLayout({ children }: { children: React.ReactNode }) {
           <StatusBar />
         </header>
         <main>{children}</main>
+        <Toaster />
         <ScrollRestoration />
         <Scripts />
       </body>
