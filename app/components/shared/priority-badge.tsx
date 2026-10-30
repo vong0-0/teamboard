@@ -1,19 +1,27 @@
 import type { HTMLAttributes } from "react";
 import { cn } from "cn";
 
-export type Priority = "HIGH" | "MED" | "LOW";
+export type Priority = "HIGH" | "MED" | "LOW" | "high" | "med" | "low";
 
 const priorityStyles: Record<Priority, string> = {
   HIGH: "bg-accent",
   MED: "bg-warn",
   LOW: "bg-gray-200",
+  high: "bg-accent",
+  med: "bg-warn",
+  low: "bg-ok",
 };
 
 type PriorityBadgeProps = HTMLAttributes<HTMLSpanElement> & {
   priority: Priority;
 };
 
-export function PriorityBadge({ priority, className, ...props }: PriorityBadgeProps) {
+export function PriorityBadge({
+  priority,
+  className,
+  children,
+  ...props
+}: PriorityBadgeProps) {
   return (
     <span
       className={cn(
@@ -23,7 +31,8 @@ export function PriorityBadge({ priority, className, ...props }: PriorityBadgePr
       )}
       {...props}
     >
-      {priority}
+      {priority.toUpperCase()}
+      {children}
     </span>
   );
 }

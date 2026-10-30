@@ -3,21 +3,18 @@ import { useSearchParams } from "react-router";
 import type { Route } from "./+types/board";
 import { BoardEmptyState } from "~/components/board/board-empty-state";
 import { BoardHeader } from "~/components/board/board-header";
-import {
-  BoardColumns,
-  type BoardTasksByColumn,
-} from "~/components/board/board-columns";
+import { BoardColumns } from "~/components/board/board-columns";
 import { BoardList } from "~/components/board/board-list";
 import { TaskDrawer } from "~/components/board/task-drawer";
 import { TaskForm } from "~/components/board/task-form";
-import { createTaskFromForm } from "~/components/board/task-form-utils";
-import type { TaskFormValues } from "~/components/board/task-form-schema";
-import type { BoardView } from "~/components/board/board-view-tabs";
+import {
+  parseBoardView,
+  type BoardView,
+} from "~/components/board/board-view-tabs";
 import { SidebarTrigger } from "~/components/layout/sidebar-trigger";
 import { Topbar } from "~/components/layout/topbar";
 import { mockProjects } from "~/mock-data/projects";
-import { mockBoardColumns, mockBoardTasks } from "~/mock-data/board";
-import type { Subtask, Task } from "~/type";
+import { useBoardTasks } from "~/hooks/use-board-tasks";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -36,18 +33,8 @@ export default function Board() {
   const [selectedProjectId, setSelectedProjectId] = useState(
     () => mockProjects[0]?.id ?? "",
   );
-  const [tasksByColumn, setTasksByColumn] = useState(
-    createInitialTasksByColumn,
-  );
-  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
-  const [taskFormOpen, setTaskFormOpen] = useState(false);
-  const [taskBeingEdited, setTaskBeingEdited] = useState<Task | null>(null);
-  const [newTaskColumnId, setNewTaskColumnId] = useState<number | undefined>();
-  const view = getBoardView(searchParams.get("view"));
-  const tasks = Object.values(tasksByColumn).flat();
-  const selectedTask = selectedTaskId
-    ? (tasks.find((task) => task.id === selectedTaskId) ?? null)
-    : null;
+  const board = useBoardTasks();
+  const view = parseBoardView(searchParams.get("view"));
 
   function handleViewChange(nextView: BoardView) {
     setSearchParams((currentParams) => {
@@ -66,29 +53,18 @@ export default function Board() {
           onProjectSelect={setSelectedProjectId}
           view={view}
           onViewChange={handleViewChange}
-          onNewTask={() => {
-            setTaskBeingEdited(null);
-            setNewTaskColumnId(undefined);
-            setTaskFormOpen(true);
-          }}
+          onNewTask={() => board.openNewTask()}
         />
         {selectedProjectId ? (
           view === "board" ? (
             <BoardColumns
-              tasksByColumn={tasksByColumn}
-              onTasksChange={setTasksByColumn}
-              onTaskSelect={(task) => setSelectedTaskId(task.id)}
-              onTaskCreate={(columnId) => {
-                setTaskBeingEdited(null);
-                setNewTaskColumnId(columnId);
-                setTaskFormOpen(true);
-              }}
+              tasksByColumn={board.tasksByColumn}
+              onTasksChange={board.setTasksByColumn}
+              onTaskSelect={board.openTask}
+              onTaskCreate={board.openNewTask}
             />
           ) : view === "list" ? (
-            <BoardList
-              tasks={tasks}
-              onTaskSelect={(task) => setSelectedTaskId(task.id)}
-            />
+            <BoardList tasks={board.tasks} onTaskSelect={board.openTask} />
           ) : (
             <ComingSoonView />
           )
@@ -100,111 +76,29 @@ export default function Board() {
         )}
       </div>
       <TaskDrawer
-        task={selectedTask}
-        tasks={tasks}
-        open={selectedTask !== null}
+        task={board.selectedTask}
+        tasks={board.tasks}
+        open={board.selectedTask !== null}
         onOpenChange={(open) => {
-          if (!open) setSelectedTaskId(null);
+          if (!open) board.closeTaskDrawer();
         }}
-        onTaskSelect={(nextTask) => setSelectedTaskId(nextTask.id)}
-        onTaskEdit={(task) => {
-          setTaskBeingEdited(task);
-          setSelectedTaskId(null);
-          setTaskFormOpen(true);
-        }}
-        onTaskDelete={(taskId) => {
-          setTasksByColumn((current) =>
-            Object.fromEntries(
-              Object.entries(current).map(([columnId, columnTasks]) => [
-                columnId,
-                columnTasks
-                  .filter((task) => task.id !== taskId)
-                  .map((task, order) => ({ ...task, order })),
-              ]),
-            ),
-          );
-          setSelectedTaskId(null);
-        }}
-        onSubtasksChange={(
-          taskId: number,
-          update: (subtasks: Subtask[]) => Subtask[],
-        ) => {
-          setTasksByColumn((current) =>
-            Object.fromEntries(
-              Object.entries(current).map(([columnId, columnTasks]) => [
-                columnId,
-                columnTasks.map((task) =>
-                  task.id === taskId
-                    ? { ...task, subtasks: update(task.subtasks) }
-                    : task,
-                ),
-              ]),
-            ),
-          );
-        }}
+        onTaskSelect={board.openTask}
+        onTaskEdit={board.openEditTask}
+        onTaskDelete={board.deleteTask}
+        onSubtasksChange={board.updateSubtasks}
       />
       <TaskForm
-        open={taskFormOpen}
-        task={taskBeingEdited}
+        open={board.taskFormOpen}
+        task={board.taskBeingEdited}
         projectId={selectedProjectId}
-        initialColumnId={newTaskColumnId}
+        initialColumnId={board.newTaskColumnId}
         onOpenChange={(open) => {
-          setTaskFormOpen(open);
-          if (!open) {
-            setTaskBeingEdited(null);
-            setNewTaskColumnId(undefined);
-          }
+          if (!open) board.closeTaskForm();
         }}
-        onSubmit={(values: TaskFormValues) => {
-          const currentTasks = Object.values(tasksByColumn).flat();
-          const nextTask = createTaskFromForm(
-            values,
-            taskBeingEdited,
-            currentTasks,
-          );
-
-          setTasksByColumn((current) => {
-            const next = Object.fromEntries(
-              Object.entries(current).map(([columnId, columnTasks]) => [
-                columnId,
-                columnTasks
-                  .filter((task) => task.id !== nextTask.id)
-                  .map((task, order) => ({ ...task, order })),
-              ]),
-            );
-            const destination = String(nextTask.columnId);
-            const destinationTasks = next[destination] ?? [];
-            next[destination] = [...destinationTasks, nextTask]
-              .sort((left, right) => left.order - right.order)
-              .map((task, order) => ({ ...task, order }));
-            return next;
-          });
-          setTaskFormOpen(false);
-          setTaskBeingEdited(null);
-          setNewTaskColumnId(undefined);
-        }}
+        onSubmit={board.saveTask}
       />
     </>
   );
-}
-
-function createInitialTasksByColumn(): BoardTasksByColumn {
-  return Object.fromEntries(
-    mockBoardColumns.map((column) => [
-      String(column.id),
-      mockBoardTasks
-        .filter(
-          (task) =>
-            task.columnId === column.id &&
-            (task.sprintId === null || task.sprintId === 14),
-        )
-        .sort((left, right) => left.order - right.order),
-    ]),
-  );
-}
-
-function getBoardView(value: string | null): BoardView {
-  return value === "list" || value === "timeline" ? value : "board";
 }
 
 function ComingSoonView() {

@@ -1,20 +1,13 @@
-import { useEffect, useState } from "react";
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { useEffect } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Dialog } from "@base-ui/react/dialog";
 import { X } from "lucide-react";
 import { FormField } from "~/components/shared/form-field";
-import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { toast } from "~/components/ui/toast";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
@@ -22,15 +15,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import {
-  mockBoardAssignees,
-  mockBoardColumns,
-  mockBoardLabels,
-} from "~/mock-data/board";
+import { mockBoardColumns } from "~/mock-data/board";
 import { mockProjects } from "~/mock-data/projects";
 import type { Task } from "~/type";
 import { taskFormSchema, type TaskFormValues } from "./task-form-schema";
 import { getTaskFormValues } from "./task-form-utils";
+import {
+  TaskAssigneeField,
+  TaskLabelField,
+  TaskSubtasksField,
+} from "./task-form-fields";
 
 type TaskFormProps = {
   open: boolean;
@@ -61,11 +55,6 @@ export function TaskForm({
     mode: "onSubmit",
     defaultValues: getTaskFormValues(task, projectId, initialColumnId),
   });
-  const { fields, append, remove } = useFieldArray({
-    control: form.control,
-    name: "subtasks",
-  });
-  const [newSubtask, setNewSubtask] = useState("");
   const values = form.watch();
   const selectedProject = mockProjects.find(
     (project) => project.id === values.projectId,
@@ -74,16 +63,8 @@ export function TaskForm({
   useEffect(() => {
     if (open) {
       form.reset(getTaskFormValues(task, projectId, initialColumnId));
-      setNewSubtask("");
     }
   }, [form, initialColumnId, open, projectId, task]);
-
-  function addSubtask() {
-    const title = newSubtask.trim();
-    if (!title) return;
-    append({ id: Date.now(), title, done: false, order: fields.length });
-    setNewSubtask("");
-  }
 
   async function submitTask(values: TaskFormValues) {
     const action = editing ? "updated" : "created";
@@ -290,216 +271,13 @@ export function TaskForm({
                 />
               </FormField>
 
-              <FormField label="Assignees" htmlFor="task-assignees-trigger">
-                <Controller
-                  control={form.control}
-                  name="assigneeIds"
-                  render={({ field }) => (
-                    <div className="flex min-h-7 flex-wrap items-center gap-1.5">
-                      {mockBoardAssignees
-                        .filter((assignee) => field.value.includes(assignee.id))
-                        .map((assignee) => (
-                          <span
-                            key={assignee.id}
-                            className="border-ink inline-flex items-center gap-1 rounded-full border bg-gray-100 px-1.5 py-0.5 font-mono text-[8px]"
-                          >
-                            <Avatar className="border-ink size-4 border">
-                              <AvatarFallback className="font-mono text-[6px] font-bold">
-                                {assignee.initials}
-                              </AvatarFallback>
-                            </Avatar>
-                            {assigneeName(assignee.initials)}
-                            <button
-                              type="button"
-                              aria-label={`Remove ${assigneeName(assignee.initials)}`}
-                              onClick={() =>
-                                field.onChange(
-                                  field.value.filter(
-                                    (id) => id !== assignee.id,
-                                  ),
-                                )
-                              }
-                              className="hover:text-accent ml-0.5 rounded-full"
-                            >
-                              <X className="size-2.5" />
-                            </button>
-                          </span>
-                        ))}
-                      <DropdownMenu>
-                        <DropdownMenuTrigger
-                          id="task-assignees-trigger"
-                          className="border-ink flex h-6 items-center rounded-full border border-dashed px-2 font-mono text-[8px] text-gray-500 hover:bg-gray-100"
-                        >
-                          + Add
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="window shadow-hard-sm rounded-sm p-1">
-                          {mockBoardAssignees.map((assignee) => (
-                            <DropdownMenuCheckboxItem
-                              key={assignee.id}
-                              checked={field.value.includes(assignee.id)}
-                              onCheckedChange={(checked) =>
-                                field.onChange(
-                                  checked
-                                    ? [...field.value, assignee.id]
-                                    : field.value.filter(
-                                        (id) => id !== assignee.id,
-                                      ),
-                                )
-                              }
-                              className="focus:bg-ink focus:text-paper rounded-sm text-xs"
-                            >
-                              <Avatar className="border-ink size-5 border">
-                                <AvatarFallback className="font-mono text-[7px]">
-                                  {assignee.initials}
-                                </AvatarFallback>
-                              </Avatar>
-                              {assigneeName(assignee.initials)}
-                            </DropdownMenuCheckboxItem>
-                          ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  )}
-                />
-              </FormField>
-
-              <FormField label="Labels" htmlFor="task-labels-trigger">
-                <Controller
-                  control={form.control}
-                  name="labelIds"
-                  render={({ field }) => (
-                    <div className="border-ink bg-paper flex min-h-8 flex-wrap items-center gap-1 rounded-sm border-2 px-1.5 py-1">
-                      {field.value.map((labelId) => {
-                        const label =
-                          mockBoardLabels[
-                            labelId as keyof typeof mockBoardLabels
-                          ];
-                        if (!label) return null;
-                        return (
-                          <span
-                            key={labelId}
-                            className="border-ink inline-flex items-center gap-1 rounded-full border bg-gray-100 px-2 py-0.5 font-mono text-[8px]"
-                          >
-                            {label.name}
-                            <button
-                              type="button"
-                              aria-label={`Remove ${label.name} label`}
-                              onClick={() =>
-                                field.onChange(
-                                  field.value.filter((id) => id !== labelId),
-                                )
-                              }
-                              className="hover:text-accent"
-                            >
-                              <X className="size-2.5" />
-                            </button>
-                          </span>
-                        );
-                      })}
-                      <DropdownMenu>
-                        <DropdownMenuTrigger
-                          id="task-labels-trigger"
-                          className="hover:text-ink px-1 text-left text-[9px] text-gray-500"
-                        >
-                          Add label...
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="window shadow-hard-sm rounded-sm p-1">
-                          {Object.entries(mockBoardLabels).map(
-                            ([id, label]) => {
-                              const labelId = Number(id);
-                              return (
-                                <DropdownMenuCheckboxItem
-                                  key={id}
-                                  checked={field.value.includes(labelId)}
-                                  onCheckedChange={(checked) =>
-                                    field.onChange(
-                                      checked
-                                        ? [...field.value, labelId]
-                                        : field.value.filter(
-                                            (selectedId) =>
-                                              selectedId !== labelId,
-                                          ),
-                                    )
-                                  }
-                                  className="focus:bg-ink focus:text-paper rounded-sm text-xs"
-                                >
-                                  {label.name}
-                                </DropdownMenuCheckboxItem>
-                              );
-                            },
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  )}
-                />
-              </FormField>
-
-              <FormField
-                label="Subtasks"
-                htmlFor="task-new-subtask"
-                count={fields.filter((field) => field.done).length}
-                max={fields.length}
-              >
-                <div className="space-y-1">
-                  {fields.map((field, index) => (
-                    <div
-                      key={field.id}
-                      className="border-ink bg-paper flex min-h-7 items-center gap-2 rounded-sm border px-1.5 py-1"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={values.subtasks[index]?.done ?? false}
-                        aria-label={`Mark ${field.title} complete`}
-                        onChange={(event) =>
-                          form.setValue(
-                            `subtasks.${index}.done`,
-                            event.currentTarget.checked,
-                          )
-                        }
-                        className="size-3 shrink-0 accent-black"
-                      />
-                      <input
-                        aria-label={`Subtask ${index + 1} title`}
-                        className={`min-w-0 flex-1 bg-transparent text-[9px] outline-none ${values.subtasks[index]?.done ? "text-gray-500 line-through" : ""}`}
-                        {...form.register(`subtasks.${index}.title`)}
-                      />
-                      <button
-                        type="button"
-                        aria-label={`Remove subtask ${field.title}`}
-                        onClick={() => remove(index)}
-                        className="hover:text-accent text-gray-500"
-                      >
-                        <X className="size-3" />
-                      </button>
-                    </div>
-                  ))}
-                  <div className="flex gap-1.5">
-                    <Input
-                      id="task-new-subtask"
-                      value={newSubtask}
-                      onChange={(event) => setNewSubtask(event.target.value)}
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter") {
-                          event.preventDefault();
-                          addSubtask();
-                        }
-                      }}
-                      placeholder="Add a subtask..."
-                      className="border-ink bg-paper focus-visible:border-ink h-7 rounded-sm border px-2 text-[9px] shadow-none focus-visible:ring-0"
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={addSubtask}
-                      disabled={!newSubtask.trim()}
-                      className="border-ink bg-paper h-7 rounded-sm border-2 px-2 text-[9px]"
-                    >
-                      Add
-                    </Button>
-                  </div>
-                </div>
-              </FormField>
+              <TaskAssigneeField control={form.control} />
+              <TaskLabelField control={form.control} />
+              <TaskSubtasksField
+                control={form.control}
+                register={form.register}
+                setValue={form.setValue}
+              />
             </div>
 
             <footer className="border-ink flex shrink-0 items-center justify-between gap-2 border-t-2 bg-gray-100 px-3 py-2 sm:px-4">
@@ -529,14 +307,4 @@ export function TaskForm({
       </Dialog.Portal>
     </Dialog.Root>
   );
-}
-
-function assigneeName(initials: string) {
-  const names: Record<string, string> = {
-    HP: "Haemin",
-    OP: "Olga",
-    MC: "Mac",
-    JS: "Jin",
-  };
-  return names[initials] ?? initials;
 }

@@ -1,4 +1,5 @@
 import { getAvatarFallback } from "~/lib/get-avatar-fallback";
+import { formatDate } from "~/lib/format-date";
 import { mockProjectOwners } from "~/mock-data/projects";
 import type { Project } from "./project-types";
 import type { ProjectFormValues } from "./project-form-schema";
@@ -57,7 +58,9 @@ export function createProjectFromForm(
     sprint: values.sprint,
     startDate: values.startDate || undefined,
     dueDate: values.dueDate,
-    due: formatDueDate(values.dueDate),
+    due: values.dueDate
+      ? formatDate(values.dueDate, { month: "short", day: "2-digit" })
+      : "",
   };
 }
 
@@ -78,15 +81,6 @@ function toDateInputValue(date: Date) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
-}
-
-function formatDueDate(value: string) {
-  if (!value) return "";
-  const [year, month, day] = value.split("-").map(Number);
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "2-digit",
-  }).format(new Date(year, month - 1, day));
 }
 
 function slugify(value: string) {

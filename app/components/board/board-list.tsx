@@ -1,21 +1,15 @@
 import { CalendarDays, MessageSquare, Paperclip } from "lucide-react";
-import {
-  mockBoardAssignees,
-  mockBoardColumns,
-  mockBoardLabels,
-} from "~/mock-data/board";
+import { mockBoardColumns } from "~/mock-data/board";
 import type { Task } from "~/type";
+import { PriorityBadge } from "~/components/shared/priority-badge";
+import { TaskLabelBadge } from "~/components/shared/task-label-badge";
+import { formatShortDate } from "~/lib/format-date";
+import { getBoardAssignees, getBoardLabels } from "~/lib/board-utils";
 
 type BoardListProps = {
   tasks: Task[];
   onTaskSelect: (task: Task) => void;
 };
-
-const priorityClasses = {
-  low: "bg-ok",
-  med: "bg-warn",
-  high: "bg-accent",
-} as const;
 
 export function BoardList({ tasks, onTaskSelect }: BoardListProps) {
   const columnsById = new Map(
@@ -31,22 +25,20 @@ export function BoardList({ tasks, onTaskSelect }: BoardListProps) {
   return (
     <section
       aria-label="Project tasks list"
-      className="border-ink min-w-0 overflow-hidden rounded-sm border-2 bg-paper"
+      className="border-ink bg-paper min-w-0 overflow-hidden rounded-sm border-2"
     >
       <header className="border-ink flex items-center justify-between gap-3 border-b-2 bg-gray-100 px-3 py-2.5">
         <h2 className="label text-[10px]">Tasks</h2>
-        <span className="border-ink rounded-sm border bg-paper px-2 py-1 font-mono text-[9px] font-bold">
+        <span className="border-ink bg-paper rounded-sm border px-2 py-1 font-mono text-[9px] font-bold">
           {orderedTasks.length} {orderedTasks.length === 1 ? "TASK" : "TASKS"}
         </span>
       </header>
 
       {orderedTasks.length > 0 ? (
-        <ul className="divide-y-2 divide-ink">
+        <ul className="divide-ink divide-y-2">
           {orderedTasks.map((task) => {
             const column = columnsById.get(task.columnId);
-            const assignees = mockBoardAssignees.filter((assignee) =>
-              task.assigneeIds.includes(assignee.id),
-            );
+            const assignees = getBoardAssignees(task.assigneeIds);
             const isDone = column?.isDone ?? false;
 
             return (
@@ -62,21 +54,13 @@ export function BoardList({ tasks, onTaskSelect }: BoardListProps) {
                       <span className="font-mono text-[9px] font-bold text-gray-500">
                         {task.key}
                       </span>
-                      {task.labelIds.map((labelId) => {
-                        const label =
-                          mockBoardLabels[
-                            labelId as keyof typeof mockBoardLabels
-                          ];
-
-                        return label ? (
-                          <span
-                            key={labelId}
-                            className={`border-ink rounded-sm border px-1.5 py-0.5 font-mono text-[8px] leading-none font-bold ${label.tone === "feature" ? "bg-ok" : "bg-gray-100"}`}
-                          >
-                            {label.name}
-                          </span>
-                        ) : null;
-                      })}
+                      {getBoardLabels(task.labelIds).map(({ id, ...label }) => (
+                        <TaskLabelBadge
+                          key={id}
+                          label={label}
+                          className="px-1.5 py-0.5"
+                        />
+                      ))}
                     </span>
                     <span
                       className={`truncate text-sm font-bold group-hover:underline ${isDone ? "text-gray-500 line-through" : "text-ink"}`}
@@ -94,11 +78,10 @@ export function BoardList({ tasks, onTaskSelect }: BoardListProps) {
                     <span className="border-ink rounded-sm border bg-gray-100 px-2 py-1 font-mono text-[9px] font-bold uppercase">
                       {column?.label ?? "Unknown"}
                     </span>
-                    <span
-                      className={`border-ink rounded-sm border px-2 py-1 font-mono text-[9px] font-bold uppercase ${priorityClasses[task.priority]}`}
-                    >
-                      {task.priority}
-                    </span>
+                    <PriorityBadge
+                      priority={task.priority}
+                      className="border px-2 py-1 text-[9px]"
+                    />
 
                     <span className="flex items-center gap-1">
                       {assignees.length > 0 ? (
@@ -112,34 +95,27 @@ export function BoardList({ tasks, onTaskSelect }: BoardListProps) {
                           </span>
                         ))
                       ) : (
-                        <span className="text-xs text-gray-500">Unassigned</span>
+                        <span className="text-xs text-gray-500">
+                          Unassigned
+                        </span>
                       )}
                     </span>
 
                     {task.dueDate ? (
-                      <span className="flex items-center gap-1 whitespace-nowrap font-mono text-[9px] font-bold text-gray-500">
-                        <CalendarDays
-                          aria-hidden="true"
-                          className="size-3.5"
-                        />
-                        {formatDueDate(task.dueDate)}
+                      <span className="flex items-center gap-1 font-mono text-[9px] font-bold whitespace-nowrap text-gray-500">
+                        <CalendarDays aria-hidden="true" className="size-3.5" />
+                        {formatShortDate(task.dueDate)}
                       </span>
                     ) : null}
 
                     <span className="flex items-center gap-1.5 font-mono text-[9px] text-gray-500">
                       <span className="flex items-center gap-1">
-                        <MessageSquare
-                          aria-hidden="true"
-                          className="size-3"
-                        />
+                        <MessageSquare aria-hidden="true" className="size-3" />
                         {task.commentCount}
                       </span>
                       {task.attachmentCount > 0 ? (
                         <span className="flex items-center gap-1">
-                          <Paperclip
-                            aria-hidden="true"
-                            className="size-3"
-                          />
+                          <Paperclip aria-hidden="true" className="size-3" />
                           {task.attachmentCount}
                         </span>
                       ) : null}
@@ -157,13 +133,4 @@ export function BoardList({ tasks, onTaskSelect }: BoardListProps) {
       )}
     </section>
   );
-}
-
-function formatDueDate(date: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "2-digit",
-  })
-    .format(new Date(`${date}T12:00:00`))
-    .toUpperCase();
 }

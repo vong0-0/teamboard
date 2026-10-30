@@ -9,12 +9,13 @@ export const mockBoardLabels = {
   4: { name: "FEATURE", tone: "feature" },
 } as const;
 
-export const mockBoardAssignees: { id: ID; initials: string }[] = [
-  { id: 1, initials: "HP" },
-  { id: 2, initials: "OP" },
-  { id: 3, initials: "MC" },
-  { id: 4, initials: "JS" },
-];
+export const mockBoardAssignees: { id: ID; initials: string; name: string }[] =
+  [
+    { id: 1, initials: "HP", name: "Haemin" },
+    { id: 2, initials: "OP", name: "Olga" },
+    { id: 3, initials: "MC", name: "Mac" },
+    { id: 4, initials: "JS", name: "Jin" },
+  ];
 
 export const mockBoardColumns: BoardColumn[] = [
   {
@@ -99,7 +100,12 @@ export const mockBoardTasks: Task[] = [
     labelIds: [1, 2],
     subtasks: [
       { id: 1431, title: "Add empty state frame", done: true, order: 0 },
-      { id: 1432, title: "Style project selector action", done: false, order: 1 },
+      {
+        id: 1432,
+        title: "Style project selector action",
+        done: false,
+        order: 1,
+      },
     ],
     dueDate: "2026-11-02",
     createdById: 1,
@@ -122,7 +128,12 @@ export const mockBoardTasks: Task[] = [
     labelIds: [1],
     subtasks: [
       { id: 1441, title: "List available projects", done: true, order: 0 },
-      { id: 1442, title: "Keep selected project in page state", done: false, order: 1 },
+      {
+        id: 1442,
+        title: "Keep selected project in page state",
+        done: false,
+        order: 1,
+      },
     ],
     dueDate: "2026-11-04",
     createdById: 2,

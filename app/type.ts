@@ -50,3 +50,5 @@ export interface Task {
   commentCount: number; // เก็บซ้ำไว้โชว์บนการ์ด
   attachmentCount: number;
 }
+
+export type BoardTasksByColumn = Record<string, Task[]>;

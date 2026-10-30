@@ -1,10 +1,10 @@
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-} from "~/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 export type BoardView = "board" | "list" | "timeline";
+
+export function parseBoardView(value: string | null): BoardView {
+  return isBoardView(value) ? value : "board";
+}
 
 type BoardViewTabsProps = {
   value: BoardView;
@@ -22,23 +22,23 @@ export function BoardViewTabs({ value, onValueChange }: BoardViewTabsProps) {
     >
       <TabsList
         aria-label="Board view"
-        className="border-ink divide-ink h-[39px] divide-x-2 rounded-sm border-2 bg-paper p-0 text-gray-500 shadow-hard-sm group-data-horizontal/tabs:h-[39px]"
+        className="border-ink divide-ink bg-paper shadow-hard-sm h-[39px] divide-x-2 rounded-sm border-2 p-0 text-gray-500 group-data-horizontal/tabs:h-[39px]"
       >
         <TabsTrigger
           value="board"
-          className="h-full w-23 flex-none rounded-none px-4 text-base text-gray-500 data-active:bg-ink data-active:text-paper data-active:shadow-none data-active:hover:text-paper first:rounded-l-sm"
+          className="data-active:bg-ink data-active:text-paper data-active:hover:text-paper h-full w-23 flex-none rounded-none px-4 text-base text-gray-500 first:rounded-l-sm data-active:shadow-none"
         >
           Board
         </TabsTrigger>
         <TabsTrigger
           value="list"
-          className="h-full w-17 flex-none rounded-none px-4 text-base text-gray-500 data-active:bg-ink data-active:text-paper data-active:shadow-none data-active:hover:text-paper"
+          className="data-active:bg-ink data-active:text-paper data-active:hover:text-paper h-full w-17 flex-none rounded-none px-4 text-base text-gray-500 data-active:shadow-none"
         >
           List
         </TabsTrigger>
         <TabsTrigger
           value="timeline"
-          className="h-full w-27 flex-none rounded-none px-4 text-base text-gray-500 data-active:bg-ink data-active:text-paper data-active:shadow-none data-active:hover:text-paper last:rounded-r-sm"
+          className="data-active:bg-ink data-active:text-paper data-active:hover:text-paper h-full w-27 flex-none rounded-none px-4 text-base text-gray-500 last:rounded-r-sm data-active:shadow-none"
         >
           Timeline
         </TabsTrigger>

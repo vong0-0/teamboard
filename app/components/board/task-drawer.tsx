@@ -1,16 +1,11 @@
 import { useEffect, useState } from "react";
 import {
   CalendarDays,
-  Check,
   ChevronLeft,
   ChevronRight,
-  GripVertical,
   UserRound,
   X,
 } from "lucide-react";
-import { move } from "@dnd-kit/helpers";
-import { DragDropProvider, useDroppable } from "@dnd-kit/react";
-import { useSortable } from "@dnd-kit/react/sortable";
 import {
   Sheet,
   SheetContent,
@@ -18,13 +13,18 @@ import {
   SheetHeader,
   SheetTitle,
 } from "~/components/ui/sheet";
-import {
-  mockBoardAssignees,
-  mockBoardColumns,
-  mockBoardLabels,
-} from "~/mock-data/board";
+import { mockBoardColumns } from "~/mock-data/board";
 import { mockProjects } from "~/mock-data/projects";
 import type { Subtask, Task } from "~/type";
+import { PriorityBadge } from "~/components/shared/priority-badge";
+import { TaskLabelBadge } from "~/components/shared/task-label-badge";
+import { formatDate, formatRelativeTime } from "~/lib/format-date";
+import { TaskSubtaskList } from "~/components/board/task-subtask-list";
+import {
+  getBoardAssignee,
+  getBoardAssignees,
+  getBoardLabels,
+} from "~/lib/board-utils";
 
 type TaskDrawerProps = {
   task: Task | null;
@@ -40,12 +40,6 @@ type TaskDrawerProps = {
   ) => void;
 };
 
-const priorityClasses = {
-  low: "bg-ok",
-  med: "bg-warn",
-  high: "bg-accent",
-} as const;
-
 export function TaskDrawer({
   task,
   tasks,
@@ -60,16 +54,12 @@ export function TaskDrawer({
   const column = task
     ? mockBoardColumns.find((item) => item.id === task.columnId)
     : undefined;
-  const assignees = task
-    ? mockBoardAssignees.filter((assignee) =>
-        task.assigneeIds.includes(assignee.id),
-      )
-    : [];
-  const createdBy = task
-    ? mockBoardAssignees.find((assignee) => assignee.id === task.createdById)
-    : undefined;
+  const assignees = task ? getBoardAssignees(task.assigneeIds) : [];
+  const createdBy = getBoardAssignee(task?.createdById);
   const taskIndex = task ? tasks.findIndex((item) => item.id === task.id) : -1;
-  const project = mockProjects[0];
+  const project = task
+    ? (mockProjects[task.projectId - 1] ?? mockProjects[0])
+    : mockProjects[0];
   const completedSubtasks =
     task?.subtasks.filter((subtask) => subtask.done).length ?? 0;
   const subtaskCount = task?.subtasks.length ?? 0;
@@ -187,7 +177,7 @@ export function TaskDrawer({
                           <span className="border-ink bg-paper flex size-6 items-center justify-center rounded-full border text-[8px]">
                             {assignee.initials}
                           </span>
-                          {assigneeName(assignee.initials)}
+                          {assignee.name}
                         </span>
                       ))}
                     </div>
@@ -199,16 +189,22 @@ export function TaskDrawer({
                   )}
                 </DetailRow>
                 <DetailRow label="Priority">
-                  <span
-                    className={`border-ink inline-flex items-center gap-2 rounded-sm border-2 px-2.5 py-1 font-mono text-[10px] font-bold uppercase ${priorityClasses[task.priority]}`}
+                  <PriorityBadge
+                    priority={task.priority}
+                    className="items-center gap-2 px-2.5 py-1 text-[10px]"
                   >
-                    {task.priority}
                     <ChevronRight aria-hidden="true" className="size-3" />
-                  </span>
+                  </PriorityBadge>
                 </DetailRow>
                 <DetailRow label="Due date">
                   <span className="border-ink inline-flex items-center gap-2 rounded-sm border-2 px-2.5 py-1 font-mono text-[10px]">
-                    {task.dueDate ? formatDate(task.dueDate) : "No due date"}
+                    {task.dueDate
+                      ? formatDate(task.dueDate, {
+                          month: "short",
+                          day: "2-digit",
+                          year: "numeric",
+                        })
+                      : "No due date"}
                     {task.dueDate ? (
                       <CalendarDays aria-hidden="true" className="size-3" />
                     ) : null}
@@ -217,20 +213,13 @@ export function TaskDrawer({
                 <DetailRow label="Labels">
                   <div className="flex flex-wrap gap-1.5">
                     {task.labelIds.length > 0 ? (
-                      task.labelIds.map((labelId) => {
-                        const label =
-                          mockBoardLabels[
-                            labelId as keyof typeof mockBoardLabels
-                          ];
-                        return label ? (
-                          <span
-                            key={labelId}
-                            className={`border-ink rounded-sm border-2 px-2 py-1 font-mono text-[9px] font-bold ${label.tone === "feature" ? "bg-ok" : "bg-gray-100"}`}
-                          >
-                            {label.name}
-                          </span>
-                        ) : null;
-                      })
+                      getBoardLabels(task.labelIds).map(({ id, ...label }) => (
+                        <TaskLabelBadge
+                          key={id}
+                          label={label}
+                          className="border-2 px-2 py-1 text-[9px]"
+                        />
+                      ))
                     ) : (
                       <span className="text-xs text-gray-500">No labels</span>
                     )}
@@ -247,8 +236,12 @@ export function TaskDrawer({
                 </DetailRow>
                 <DetailRow label="Created" last>
                   <span className="font-mono text-[10px] text-gray-500">
-                    {assigneeName(createdBy?.initials)} ·{" "}
-                    {formatDate(task.createdAt)}
+                    {createdBy?.name ?? "Unknown"} ·{" "}
+                    {formatDate(task.createdAt, {
+                      month: "short",
+                      day: "2-digit",
+                      year: "numeric",
+                    })}
                   </span>
                 </DetailRow>
               </dl>
@@ -290,24 +283,10 @@ export function TaskDrawer({
                   />
                 </div>
 
-                <DragDropProvider
-                  onDragOver={(event) => {
-                    if (event.operation.source?.type !== "subtask") return;
-                    onSubtasksChange(task.id, (current) =>
-                      move(
-                        [...current].sort(
-                          (left, right) => left.order - right.order,
-                        ),
-                        event,
-                      ).map((subtask, order) => ({ ...subtask, order })),
-                    );
-                  }}
-                >
-                  <SubtaskList
-                    task={task}
-                    onSubtasksChange={onSubtasksChange}
-                  />
-                </DragDropProvider>
+                <TaskSubtaskList
+                  task={task}
+                  onSubtasksChange={onSubtasksChange}
+                />
 
                 <form onSubmit={handleAddSubtask} className="mt-2 flex gap-2">
                   <input
@@ -356,115 +335,6 @@ export function TaskDrawer({
   );
 }
 
-function SubtaskList({
-  task,
-  onSubtasksChange,
-}: {
-  task: Task;
-  onSubtasksChange: TaskDrawerProps["onSubtasksChange"];
-}) {
-  const groupId = `subtasks-${task.id}`;
-  const { ref } = useDroppable({
-    id: groupId,
-    type: "subtask",
-    accept: "subtask",
-  });
-
-  if (task.subtasks.length === 0) {
-    return <p className="mt-3 text-sm text-gray-500">No subtasks yet.</p>;
-  }
-
-  return (
-    <ul ref={ref} className="mt-2 space-y-2">
-      {[...task.subtasks]
-        .sort((left, right) => left.order - right.order)
-        .map((subtask, index) => (
-          <SubtaskRow
-            key={subtask.id}
-            taskId={task.id}
-            subtask={subtask}
-            index={index}
-            groupId={groupId}
-            onSubtasksChange={onSubtasksChange}
-          />
-        ))}
-    </ul>
-  );
-}
-
-function SubtaskRow({
-  taskId,
-  subtask,
-  index,
-  groupId,
-  onSubtasksChange,
-}: {
-  taskId: number;
-  subtask: Subtask;
-  index: number;
-  groupId: string;
-  onSubtasksChange: TaskDrawerProps["onSubtasksChange"];
-}) {
-  const { ref, handleRef, isDragging } = useSortable({
-    id: subtask.id,
-    index,
-    group: groupId,
-    type: "subtask",
-    accept: "subtask",
-  });
-
-  function updateSubtask(update: (item: Subtask) => Subtask) {
-    onSubtasksChange(taskId, (subtasks) =>
-      subtasks.map((item) => (item.id === subtask.id ? update(item) : item)),
-    );
-  }
-
-  return (
-    <li
-      ref={ref}
-      className={`border-ink bg-paper flex min-h-14 items-center gap-2 rounded-sm border-2 px-3 py-2 ${isDragging ? "opacity-50" : ""}`}
-    >
-      <GripVertical
-        ref={handleRef}
-        aria-hidden="true"
-        className="size-4 shrink-0 cursor-grab text-gray-500 active:cursor-grabbing"
-      />
-      <button
-        type="button"
-        aria-label={
-          subtask.done ? "Mark subtask incomplete" : "Mark subtask complete"
-        }
-        aria-pressed={subtask.done}
-        onClick={() => updateSubtask((item) => ({ ...item, done: !item.done }))}
-        className={`border-ink flex size-6 shrink-0 items-center justify-center rounded-sm border-2 ${subtask.done ? "bg-ink text-paper" : "bg-paper text-ink"}`}
-      >
-        {subtask.done ? (
-          <Check aria-hidden="true" className="size-4" strokeWidth={3} />
-        ) : null}
-      </button>
-      <span
-        className={`min-w-0 flex-1 text-sm ${subtask.done ? "text-gray-500 line-through" : "text-ink"}`}
-      >
-        {subtask.title}
-      </span>
-      <button
-        type="button"
-        aria-label={`Remove subtask: ${subtask.title}`}
-        onClick={() =>
-          onSubtasksChange(taskId, (subtasks) =>
-            subtasks
-              .filter((item) => item.id !== subtask.id)
-              .map((item, order) => ({ ...item, order })),
-          )
-        }
-        className="hover:text-ink shrink-0 px-1 text-sm text-gray-500"
-      >
-        ×
-      </button>
-    </li>
-  );
-}
-
 function DetailRow({
   label,
   children,
@@ -482,34 +352,4 @@ function DetailRow({
       <dd className="text-ink min-w-0">{children}</dd>
     </div>
   );
-}
-
-function assigneeName(initials?: string) {
-  const names: Record<string, string> = {
-    HP: "Haemin",
-    OP: "Olga",
-    MC: "Mac",
-    JS: "Jin",
-  };
-  return initials ? (names[initials] ?? initials) : "Unknown";
-}
-
-function formatDate(date: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "2-digit",
-    year: "numeric",
-  }).format(new Date(date));
-}
-
-function formatRelativeTime(date: string) {
-  const minutes = Math.max(
-    0,
-    Math.floor((Date.now() - new Date(date).getTime()) / 60000),
-  );
-  if (minutes < 1) return "JUST NOW";
-  if (minutes < 60) return `${minutes}M AGO`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}H AGO`;
-  return `${Math.floor(hours / 24)}D AGO`;
 }
